@@ -1,5 +1,5 @@
 # BigPie 스터디 자료
-- 본 프로젝트 BigPie 스터디 자료입니다. 사용하실 때는 흔적을 남겨주시거나 출처를 기재해주시면 감사하겠습니다.
+- BigPie Study 에서의 하루하루의 배움을 모아 정리하는 용도의 Repository 입니다.
 
 ## context
 - 1 week : DB with Oracle
