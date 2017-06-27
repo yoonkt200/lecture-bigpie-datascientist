@@ -9,4 +9,4 @@ www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver 
 
 ## Image
 test image
-![](week1/week1_images/table 1.png?raw=true)
+![](https://raw.github.com/yoonkt200/DataScience/master/week1/week1_images/1.png)
