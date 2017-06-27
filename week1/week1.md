@@ -1,8 +1,15 @@
 # 1주차 
 
 - 1일차 
-Oracle download (Windosw 7 64bit 11gR2 ver.)\
-www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver File1,2 downloads.
+1. Oracle download (Windosw 7 64bit 11gR2 ver.)\
+www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver File1,2 downloads. -> 두개의 압축폴더 하나의 폴더로 압축해제 -> 설치
+
+2. Developer Tools download
+download/developer download/Developer Tools--> SQL Developer --> 400MB Download
+
+3. SQL Developer initioalize
+![](https://raw.github.com/yoonkt200/DataScience/master/week1/week1_images/1.jpg)
+![](https://raw.github.com/yoonkt200/DataScience/master/week1/week1_images/2.jpg)
 
 [데이터와 관련된 기본 정의]
 
@@ -16,10 +23,5 @@ www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver 
 만약 정보를 바탕으로 한 가지 유용한 사실을 발견하게 된다면, 이는 지식이 된다.
 최종적으로 이러한 지식을 바탕으로 모든 데이터를 분석하여, 지식을 패턴에 적용시키게 되면 지혜가 된다.
 
-
-## 예시	
-- ddawda
-
-## Image
-test image
-![](https://raw.github.com/yoonkt200/DataScience/master/week1/week1_images/1.png)
+[k-ict]
+https://kbig.kr/ -> 인프라 -> 분석실습 관리
