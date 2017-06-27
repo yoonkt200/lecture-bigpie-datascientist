@@ -9,4 +9,4 @@ www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver 
 
 ## Image
 test image
-![homepage](https://github.com/yoonkt200/DataScience/blob/master/week1/week1_images/1.PNG)
+![homepage](https://github.com/yoonkt200/DataScience/tree/master/week1/week1_images/1.PNG)
