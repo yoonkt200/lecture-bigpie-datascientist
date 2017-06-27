@@ -2,7 +2,7 @@
 
 - 1일차
 
-##[----설치----] 
+## [----설치----] 
 1. Oracle download (Windosw 7 64bit 11gR2 ver.)\
 www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver File1,2 downloads. -> 두개의 압축폴더 하나의 폴더로 압축해제 -> 설치
 
@@ -15,7 +15,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1/week1_images/2.JPG)
 
-##[----데이터와 관련된 기본 정의----]
+## [----데이터와 관련된 기본 정의----]
 
 데이터 : 의미 없는 기록
 정보 : 의미 있는 데이터
@@ -27,7 +27,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 만약 정보를 바탕으로 한 가지 유용한 사실을 발견하게 된다면, 이는 지식이 된다.
 최종적으로 이러한 지식을 바탕으로 모든 데이터를 분석하여, 지식을 패턴에 적용시키게 되면 지혜가 된다.
 
-##[----k-ict----]
+## [----k-ict----]
 https://kbig.kr/ -> 인프라 -> 분석실습 관리
 
-##[----Data Modeling----]
+## [----Data Modeling----]
