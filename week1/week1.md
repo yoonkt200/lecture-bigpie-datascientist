@@ -8,8 +8,11 @@ www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver 
 download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 
 3. SQL Developer initioalize
+<br />
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1/week1_images/1.JPG)
+<br />
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1/week1_images/2.JPG)
+<br />
 
 [데이터와 관련된 기본 정의]
 
