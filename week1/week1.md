@@ -1,5 +1,5 @@
 # 1주차 
-- awdawd
+- awdawdd
 
 ## 예시	
 - ddawda
