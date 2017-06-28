@@ -3,13 +3,13 @@
 - 1일차
 
 ## 1. [----설치----] 
-1.1 Oracle download (Windosw 7 64bit 11gR2 ver.)\
+- 1.1 Oracle download (Windosw 7 64bit 11gR2 ver.)\
 www.oracle.com -> Menu -> Downloads -> Database -> Oracle Database -> 11gR2 ver File1,2 downloads. -> 두개의 압축폴더 하나의 폴더로 압축해제 -> 설치
 
-1.2 Developer Tools download
+- 1.2 Developer Tools download
 download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 
-1.3 SQL Developer initioalize
+- 1.3 SQL Developer initioalize
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/1.JPG)
 
