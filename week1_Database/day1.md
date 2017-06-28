@@ -1,30 +1,46 @@
 # 1일차 
+
+
 -----------------------
+
+
 #### **1. 설치**
+
+
 > **1.1 Oracle download (Windosw 7 64bit 11gR2 ver.)**
+
 
 www.oracle.com -> 
 Menu -> Downloads -> Database -> Oracle
 Database -> 11gR2 ver File1,2 downloads. -> 두개의 압축폴더 하나의 폴더로 압축해제 -> 설치
 
+
 > **1.2 Developer Tools download**
+
 
 download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 
+
 > **1.3 SQL Developer initioalize**
+
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/1.JPG)
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/2.JPG)
 
+
 -----------------------
 
+
 #### **2. 데이터와 관련된 기본 정의**
+
 
 - 데이터 : 의미 없는 기록
 - 정보 : 의미 있는 데이터
 - 지식 : 가치 있는 정보
 - 지혜 : 패턴화된 지식
+
+
 ```
 데이터는 아무런 의미가 없는 기록을 말한다.
 
@@ -34,6 +50,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 
 최종적으로 이러한 지식을 바탕으로 모든 데이터를 분석하여, 지식을 패턴에 적용시키게 되면 지혜가 된다.
 ```
+
 -----------------------
 
 #### **3. k-ict**
@@ -44,6 +61,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 #### **4. Data Modeling**
 
 >**4.1 개념적, 논리적 모델링**
+
 ```
 - 현실 세계의 개념을 기반으로 개념적 모델링을 하는것. 
 	-> ER 다이어그램
@@ -51,8 +69,10 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 - 개념적 모델이 성립된 후 논리적(관계 데이터 모델) 모델링을 함.
 
 - 의사소통과 협업을 위해 이러한 속성들을 표현해 주는것. (문서화 작업의 일부)
+
 ```
 >**4.2 데이터베이스 생명주기**
+
 ```
 요구사항 수집 및 분석 -> 설계 -> 구현 -> 운영 -> 감시 및 개선 -> 요구사항 수집 및 분석
 
@@ -64,7 +84,9 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 
 - 물리적 모델링 : 생성 계획에 따라 DB개체를 정의하고 테이블과 인덱스를 설계함.
 ```
+
 >**4.3 세부사항**
+
 ```
 [4.3.1 요구사항 수집 및 분석 단계]
 
@@ -77,7 +99,9 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 
 개체(entity)를 추출하고 각 개체들간의 관계를 정의하여 ER다이어그램을 만드는 과정.
 ```
+
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/3.jpg)
+
 ```
 [4.3.3 논리적 모델링]
 
@@ -101,6 +125,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 -----------------------
 
 #### **5. 데이터 이상 현상**
+
 ```
 잘못 설계된 테이블로 삽입, 삭제, 수정 같은 데이터 조작을 할때 일어나는 현상
 
@@ -114,29 +139,41 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 -----------------------
 
 #### **6. 정규화**
+
 ```
 이상 현상을 해결하기 위한 방법.
 
 주로 테이블을 세분화하고 나누는 과정.
 ```
+
 -----------------------
 
 #### **7. Transaction**
+
 ```
 트랜잭션은 DBMS에서 데이터를 다루는 논리적인 작업의 단위이다.
 
 보통 단일 SQL문을 사용하여 데이터를 다루지만, 여러개의 쿼리를 순차적으로 수행하기도 한다. 
 이러한 쿼리 묶음의 단위를 트랜잭션이라고 한다.
 ```
+
 -----------------------
 
 #### **8. ER model**
 
->개체 타입 : 약한 개체 타입과 강한 개체 타입이 있음. 강한 개체 타입은 독자적인 존재가 가능하고, 약한 개체 타입은 상위 개체 타입을 반드시 가지는 타입이다.
+```
+개체 타입 : 약한 개체 타입과 강한 개체 타입이 있음. 
+
+강한 개체 타입은 독자적인 존재가 가능하고, 약한 개체 타입은 상위 개체 타입을 반드시 가지는 타입이다.
+```
 
 강한 개체는 직사각형, 약한 개체는 직사각형 두개를 겹친 모양으로 나타냄.
 
->속성 : 속성은 개체가 가진 성질을 말하는데 속성의 유형으로 여러 가지가 있음. 속성, 키속성, 약한 개체의 식별자(약한 개체는 키 대신에 식별자를 가짐), 다중값 속성, 유도 속성, 복합 속성 등
+```
+속성 : 속성은 개체가 가진 성질을 말하는데 속성의 유형으로 여러 가지가 있음. 
+
+속성, 키속성, 약한 개체의 식별자(약한 개체는 키 대신에 식별자를 가짐), 다중값 속성, 유도 속성, 복합 속성 등
+```
 
 만약 속성이 개체를 유일하게 식별할 수 있는 키일 경우, 속성 이름에 밑줄을 긋는 모양이 된다.
 
@@ -149,6 +186,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 #### **9. ER model의 관계 데이터 모델로의 사상**
 
 >ER모델을 관계 데이터 모델로 사상시키는 과정.
+
 ```
 - 9.1 개체 타입의 사상
 
@@ -164,6 +202,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 -----------------------
 
 #### **10. ER 다이어그램 예시**
+
 ```
 ① 교수(Professor)는 아이디(ssn), 이름(name), 나이(age), 직위(rank), 연구 분야(speciality)를 가진다.
 
