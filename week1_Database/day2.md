@@ -204,9 +204,11 @@ Selection이 투플을 추출했다면, Projection은 속성을 기준으로 릴
 Cartesian production : 두 릴레이션을 연결시켜 하나의 결과 릴레이션으로 합칠 때 사용함.
 
 결과 릴레이션은 첫 번째 릴레이션의 투플을 두번째 릴레이션의 모든 투플과 순서대로 곱해진 형식.
+```
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/2-1.png)
 
+```
 [카티전 프로덕션 예제]
 
 ```
