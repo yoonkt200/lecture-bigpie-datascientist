@@ -124,8 +124,9 @@ having count(*) >= 2; -- having 조건은 순서가 중요하다. 여기서는 �
 
 
 
-
 연습
+
+~~~~
 
 -- 가격이 10000원 이상인 도서를 구매한 고객에 대하여 총 도서 판매액을 구하시오.
 select custid, sum(saleprice) as "총 도서 판매액"
@@ -205,6 +206,8 @@ where name like '김%'
 select name, address
 from customer
 where name like '김%' and name like '%아'
+
+~~~~
 
 -----------------------
 
