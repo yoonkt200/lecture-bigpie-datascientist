@@ -9,7 +9,7 @@
 
 >demo_madang_init 열기 한 후에
 
->>코드 ctrl + a -> ctrl + enter
+>>코드 ctrl + a -> ctrl + enter : 테이블 initialize
 
 
 >>데이터베이스 접속 명령어 : conn
@@ -206,7 +206,8 @@ where name like '김%'
 -- 성이 김씨이고 아로 끝나는 고객의 이름과 주소
 select name, address
 from customer
-where name like '김%' and name like '%아'
+where name like '김%' and name like '%아' 
+-- where name like '김%' and name like '김%아' : 이렇게 쓸 수도 있음
 
 ```
 
