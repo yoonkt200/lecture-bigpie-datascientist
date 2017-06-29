@@ -309,12 +309,135 @@ where name like '김%' and name like '%아'
 
 -----------------------
 
-#### **4. ??**
+#### **4. scott data 실습**
 
-> 게임을 하면 이겨야지!
+> 4.1 scott data 실습 환경 구축 (테이블 재생성)
 
 ```sql
-??
+SET TERMOUT ON
+PROMPT Building demonstration tables. Please wait.
+SET TERMOUT OFF
+
+DROP TABLE EMP;
+DROP TABLE DEPT;
+DROP TABLE BONUS;
+DROP TABLE SALGRADE;
+DROP TABLE DUMMY;
+
+CREATE TABLE EMP (
+	EMPNO 		NUMBER(4) NOT NULL,
+	ENAME 		VARCHAR2(10),
+	JOB 		VARCHAR2(9),
+	MGR 		NUMBER(4),
+	HIREDATE 	DATE,
+	SAL 		NUMBER(7, 2),
+	COMM 		NUMBER(7, 2),
+	DEPTNO 		NUMBER(2)
+	);
+
+INSERT INTO EMP VALUES (7369, 'SMITH', 'CLERK', 7902,TO_DATE('1980-12-17', 'YYYY-MM-DD'), 800, NULL, 20);
+INSERT INTO EMP VALUES (7499, 'ALLEN', 'SALESMAN', 7698,TO_DATE('1981-02-20', 'YYYY-MM-DD'), 1600, 300, 30);
+INSERT INTO EMP VALUES (7521, 'WARD', 'SALESMAN', 7698,TO_DATE('1981-02-22', 'YYYY-MM-DD'), 1250, 500, 30);
+INSERT INTO EMP VALUES (7566, 'JONES', 'MANAGER', 7839,TO_DATE('1981-04-02', 'YYYY-MM-DD'), 2975, NULL, 20);
+INSERT INTO EMP VALUES (7654, 'MARTIN', 'SALESMAN', 7698,TO_DATE('1981-09-28', 'YYYY-MM-DD'), 1250, 1400, 30);
+INSERT INTO EMP VALUES (7698, 'BLAKE', 'MANAGER', 7839,TO_DATE('1981-05-01', 'YYYY-MM-DD'), 2850, NULL, 30);
+INSERT INTO EMP VALUES (7782, 'CLARK', 'MANAGER', 7839,TO_DATE('1981-06-09', 'YYYY-MM-DD'), 2450, NULL, 10);
+INSERT INTO EMP VALUES (7788, 'SCOTT', 'ANALYST', 7566,TO_DATE('1982-12-09', 'YYYY-MM-DD'), 3000, NULL, 20);
+INSERT INTO EMP VALUES (7839, 'KING', 'PRESIDENT', NULL,TO_DATE('1981-11-17', 'YYYY-MM-DD'), 5000, NULL, 10);
+INSERT INTO EMP VALUES (7844, 'TURNER', 'SALESMAN', 7698,TO_DATE('1981-09-08', 'YYYY-MM-DD'), 1500, 0, 30);
+INSERT INTO EMP VALUES (7876, 'ADAMS', 'CLERK', 7788,TO_DATE('1983-01-12', 'YYYY-MM-DD'), 1100, NULL, 20);
+INSERT INTO EMP VALUES (7900, 'JAMES', 'CLERK', 7698,TO_DATE('1981-12-03', 'YYYY-MM-DD'), 950, NULL, 30);
+INSERT INTO EMP VALUES (7902, 'FORD', 'ANALYST', 7566,TO_DATE('1981-12-03', 'YYYY-MM-DD'), 3000, NULL, 20);
+INSERT INTO EMP VALUES (7934, 'MILLER', 'CLERK', 7782,TO_DATE('1982-01-23', 'YYYY-MM-DD'), 1300, NULL, 10);
+
+CREATE TABLE DEPT(
+	DEPTNO 		NUMBER(2),
+	DNAME 		VARCHAR2(14),
+	LOC 		VARCHAR2(13) 
+	);
+
+INSERT INTO DEPT VALUES (10, 'ACCOUNTING', 'NEW YORK');
+INSERT INTO DEPT VALUES (20, 'RESEARCH', 'DALLAS');
+INSERT INTO DEPT VALUES (30, 'SALES', 'CHICAGO');
+INSERT INTO DEPT VALUES (40, 'OPERATIONS', 'BOSTON');
+
+CREATE TABLE BONUS(
+	ENAME 		VARCHAR2(10),
+	JOB 		VARCHAR2(9),
+	SAL 		NUMBER,
+	COMM 		NUMBER
+	);
+
+CREATE TABLE SALGRADE(
+	GRADE NUMBER,
+	LOSAL NUMBER,
+	HISAL NUMBER
+	);
+
+INSERT INTO SALGRADE VALUES (1, 700, 1200);
+INSERT INTO SALGRADE VALUES (2, 1201, 1400);
+INSERT INTO SALGRADE VALUES (3, 1401, 2000);
+INSERT INTO SALGRADE VALUES (4, 2001, 3000);
+INSERT INTO SALGRADE VALUES (5, 3001, 9999);
+
+CREATE TABLE DUMMY (DUMMY NUMBER);
+
+INSERT INTO DUMMY VALUES (0);
+
+COMMIT;
+
+SET TERMOUT ON
+PROMPT Demonstration table build is complete.
+EXIT
+```
+
+> 4.2 그룹 함수 에러해결 예제
+
+>> 그룹 함수를 이용해서 사원의 총 급여를 구하는 쿼리문
+> select sum(SA) from emp;
+
+```sql
+select sum(SAL) 
+from emp;
+```
+
+>> 커미션(COMM) 총액을 구하는 쿼리문
+> select sum(COMM) from ep;
+
+```sql
+select sum(COMM) 
+from emp;
+```
+
+>> 급여 평균을 구하는 쿼리문
+> seect avg(SAL) from emp;
+
+```sql
+select avg(SAL) from emp;
+```
+
+>> 가장 높은 급여와 가장 낮은 급여를 구하는 쿼리문
+> select max(SAL), min(SAL) fom emp;
+
+```sql
+select max(SAL), min(SAL) 
+from emp;
+```
+
+>> 사원 테이블의 사원들 중에서 커미션을 받은 사원의 수를 구하는 쿼리문
+> select COMM from emp;
+
+```sql
+select COMM 
+from emp;
+```
+
+>> 중복 제거를 반영하여 담당업무의 개수를 구하는 쿼리문
+> select count(DT JOB) 업무수 from emp;
+
+```sql
+select count(DISTINCT JOB) 업무수 
+from emp;
 ```
 
 -----------------------
