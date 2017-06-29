@@ -446,15 +446,56 @@ select count(DISTINCT JOB) 업무수
 from emp;
 ```
 
-## **4.2 그룹 함수 에러해결 예제**
+## **4.3 group by 에러해결 예제**
 
->> 그룹 함수를 이용해서 사원의 총 급여를 구하는 쿼리문
+>> 사원 테이블을 부서 번호로 그룹 짓는 쿼리문
 
-> select sum(SA) from emp;
+> select deptno from emp;
 
 ```sql
-select sum(SAL) 
-from emp;
+select deptno
+from emp
+group by deptno
+```
+
+>> 소속 부서별 평균 급여를 구하는 쿼리문
+
+> select from emp group by deptno;
+
+```sql
+select deptno, avg(sal)
+from emp 
+group by deptno;
+```
+
+>> 소속 부서별 급여 총액과 평균 급여를 구하는 쿼리문
+
+> select dept, sum(SAL), from emp group by deptno;
+
+```sql
+select deptno, sum(SAL) as "급여 총액", avg(SAL) as "평균 급여"
+from emp 
+group by deptno;
+```
+
+>> 소속 부서별 최대 급여와 최소 급여를 구하는 쿼리문
+
+> select deptno 부서번호, max(sal) as 최대급여, 최소급여 from emp group by deptno;
+
+```sql
+select deptno as 부서번호, max(sal) as 최대급여, min(sal) as 최소급여 
+from emp
+group by deptno;
+```
+
+>> 부서별 사원의 수와 커미션을 받는 사원의 수를 계산하는 쿼리문
+
+> select deptno, count(*), count(comm) from emp;
+
+```sql
+select deptno, count(*) as "부서별 사원 수", count(comm) as "커미션 받는 사원 수" 
+from emp
+group by deptno;
 ```
 
 -----------------------
