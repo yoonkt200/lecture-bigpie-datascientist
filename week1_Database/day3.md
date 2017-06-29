@@ -523,3 +523,41 @@ having max(sal) >= 2900;
 ```
 
 -----------------------
+
+
+```sql
+--1. 부서별 평균급여가 높은 순으로 정렬하여 출력하는 쿼리문을 작성하시오.
+
+select deptno, avg(sal)
+from emp
+group by deptno
+order by avg(sal) DESC
+
+
+--2. 사원들의 급여를 내림차순으로 정렬하여 나타내시오
+
+select empno, sal
+from emp
+order by sal DESC
+
+
+--3. 직업에 따른 평균 급여를 그룹으로 나타내시오.
+
+select job, avg(sal)
+from emp
+group by job
+
+
+--4. 부서별 직업의 수를 나타내시오
+
+select deptno, count(DISTINCT job)
+from emp
+group by deptno
+
+
+--5. 전체 릴레이션을 부서별로 정렬하고, 부서 내에서는 연차 순으로 정리하시오.
+
+select *
+from emp
+order by deptno DESC, hiredate ASC
+```
