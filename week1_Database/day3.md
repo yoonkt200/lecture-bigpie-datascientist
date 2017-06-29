@@ -498,4 +498,28 @@ from emp
 group by deptno;
 ```
 
+## **4.4 having 에러해결 예제**
+
+>> 그룹지어진 부서별 평균 급여가 2000 이상인 부서의 번호와 부서별 평균 급여를 출력하는 쿼리문
+
+> select dtno, avg(sal) from emp group by deptno having avg(S) >= 2000;
+
+```sql
+select deptno, avg(sal) 
+from emp
+group by deptno 
+having avg(sal) >= 2000;
+```
+
+>> 부서의 최대값과 최소값을 구하되, 최대 급여가 2900 이상인 부서만 출력하는 쿼리문
+
+> select deptno, max(sal), min(sal), from emp group deptno having m(sal) > 2900;
+
+```sql
+select deptno, max(sal), min(sal)
+from emp 
+group by deptno 
+having max(sal) >= 2900;
+```
+
 -----------------------
