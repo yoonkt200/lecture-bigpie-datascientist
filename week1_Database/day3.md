@@ -7,33 +7,34 @@
 #### **1. 기본 실습**
 
 
-demo_madang_init 열기 한 후에
+>demo_madang_init 열기 한 후에
 
-코드 ctrl + a -> ctrl + enter
+>>코드 ctrl + a -> ctrl + enter
 
 
-데이터베이스 접속 명령어 : conn
+>>데이터베이스 접속 명령어 : conn
 
+```sql
 select *
 from Book;
-> Book의 모든 것을 보여줌
+-- Book의 모든 것을 보여줌
 
 select phone
 FROM Customer
 WHERE name='김연아'
-> Customer중 name을 검색하여 phone을 보여줌 (name, phone을 다 보여주고 싶으면 select phone, name)
+-- Customer중 name을 검색하여 phone을 보여줌 (name, phone을 다 보여주고 싶으면 select phone, name)
 
 select DISTINCT name 
->중복 제거 셀렉트문
+-- 중복 제거 셀렉트문
 
 select *
 from book
-where bookname like '_구%'
-> 책의 이름에서 두번째 문자가 '구'인 책들 찾음.
+where bookname like '_구%' 
+-- 책의 이름에서 두번째 문자가 '구'인 책들 찾음.
+```
 
-
-여러 가지 예제들
-
+> 여러 가지 예제들
+```sql
 select *
 from book
 order by price DESC, publisher ASC;
@@ -80,15 +81,14 @@ where saleprice between 15000 and 20000
 select *
 from book
 order by price DESC, publisher ASC;
-
+```
 
 -----------------------
 
 
 #### **2. 함수 사용등 응용 실습**
 
-
-
+```sql
 select saleprice, custid
 from orders
 
@@ -120,7 +120,8 @@ from orders
 where saleprice >= 8000 -- saleprice가 8000 이상인것만 연산에 포함
 group by custid
 having count(*) >= 2; -- having 조건은 순서가 중요하다. 여기서는 뒤에 나오는게 중요.
-> having은 검색조건 문법.
+-- having은 검색조건 문법.
+```
 
 
 
