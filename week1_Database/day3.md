@@ -8,9 +8,7 @@
 ```
 - 데이터 정의어(DDL) : 테이블 관계의 구조를 생성하는 등에 사용. CREATE, DROP 등이 있음.
 
-- 데이터 조작어(DML) : 테이블에 데이터를 검색, 삽입, 수정, 삭제하는 등에 사용.
-
-SELECT, INSERT, DELETE, UPDATE 등이 있음
+- 데이터 조작어(DML) : 테이블에 데이터를 검색, 삽입, 수정, 삭제하는 등에 사용. (SELECT, INSERT, DELETE, UPDATE...)
 
 - WHERE 조건 : 비교, 범위, 집합, 패턴, NULL등의 조건 술어를 사용하는 문법.
 
