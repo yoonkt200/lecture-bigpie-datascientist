@@ -4,7 +4,7 @@
 -----------------------
 
 
-#### **1. 실습**
+#### **1. 기본 실습**
 
 
 demo_madang_init 열기 한 후에
@@ -32,28 +32,179 @@ where bookname like '_구%'
 > 책의 이름에서 두번째 문자가 '구'인 책들 찾음.
 
 
+여러 가지 예제들
+
+select *
+from book
+order by price DESC, publisher ASC;
+
+select *
+from book
+where price between 10000 and 20000;
+
+select *
+from book
+where publisher not in ('굿스포츠', '대한미디어')
+
+select *
+from book
+where publisher LIKE '굿스포츠' or publisher LIKE '대한미디어'
+
+select bookname, publisher
+from book
+where bookname LIKE '축구의 역사'
+
+select bookname, publisher
+from book
+where bookname LIKE '%축구%'
+
+select *
+from book
+where price >= 20000 and bookname like '%축구%'
+
+select *
+from book
+where publisher in ('굿스포츠', '대한미디어')
+
+SELECT * 
+FROM Book
+WHERE Bookname LIKE '%억'
+SELECT * 
+FROM Book
+WHERE Bookname LIKE '%억'
+
+select name
+from orders, customer
+where saleprice between 15000 and 20000
+
+select *
+from book
+order by price DESC, publisher ASC;
+
 
 -----------------------
 
 
-#### **2. 데이터와 관련된 기본 정의**
+#### **2. 함수 사용등 응용 실습**
 
 
-- 데이터 : 의미 없는 기록
-- 정보 : 의미 있는 데이터
-- 지식 : 가치 있는 정보
-- 지혜 : 패턴화된 지식
+
+select saleprice, custid
+from orders
+
+select sum(saleprice)
+from orders
+
+select sum(saleprice) as 총매출
+from orders
+where custid=2;
+
+select sum(saleprice) as Total,
+        avg(saleprice) as Average,
+        min(saleprice) as Minimum,
+        max(saleprice) as Maximum
+from orders
+
+select count(*)
+from orders
+
+select sum(saleprice) as "총 매출" -- 쌍따옴표로 해야 가능. 속성의 string은 쌍따옴표로.
+from orders
+
+select custid, count(*) as 도서수량, sum(saleprice) as 총액
+from orders
+group by custid;
+
+select custid, count(*) as 도서수량, sum(saleprice) as 총액
+from orders
+where saleprice >= 8000 -- saleprice가 8000 이상인것만 연산에 포함
+group by custid
+having count(*) >= 2; -- having 조건은 순서가 중요하다. 여기서는 뒤에 나오는게 중요.
+> having은 검색조건 문법.
 
 
-```
-데이터는 아무런 의미가 없는 기록을 말한다.
 
-이러한 데이터가 모여 무언가 의미를 갖게 되면 그것이 바로 정보이다.
 
-만약 정보를 바탕으로 한 가지 유용한 사실을 발견하게 된다면, 이는 지식이 된다.
+연습
 
-최종적으로 이러한 지식을 바탕으로 모든 데이터를 분석하여, 지식을 패턴에 적용시키게 되면 지혜가 된다.
-```
+-- 가격이 10000원 이상인 도서를 구매한 고객에 대하여 총 도서 판매액을 구하시오.
+select custid, sum(saleprice) as "총 도서 판매액"
+from orders
+where saleprice >= 10000
+group by custid;
+
+-- 고객별로 주문한 도서의 수량과 평균 판매액을 구하시오
+select custid, count(*) as 도서수량, avg(saleprice)
+from orders
+group by custid
+
+-- 가격이 10000원 이상인 도서를 구매한 고객에 대하여 고객별 주문 도서의 총 수량을 구하시오. 단, 고객ID를 기준으로 정렬하시오.
+select custid, count(*) 총수량
+from orders
+where saleprice >= 10000
+group by custid
+order by custid;
+
+-- 총 만원이상 구매한 사람의 목록을 구하시오
+select custid, sum(saleprice)
+from orders
+where saleprice >= 10000
+group by custid
+
+-- 1번 박지성 고객이 주문한 도서의 총 판매액을 구하세용
+select custid, sum(saleprice) as 판매액
+from orders
+where custid=1
+group by custid;
+
+-- 축구 관련 도서를 구매한 고객에 대하여 고객별 주문 도서의 총 수량을 구하시오. 단, 두 권 이상 구매한 고객만 구하시오
+select custid, count(*) as 수량
+from orders
+where bookid in (1,2,3)
+group by custid
+having count(*) >= 2;
+
+-- 도서번호가 1인 도서의 이름
+select bookname
+from book
+where bookid=1
+
+-- 가격이 20000원 이상인 도서의 이름
+select bookname, price
+from book
+where price >= 20000
+
+-- 서점 도서의 총 개수
+select count(*) as "총 개수"
+from book
+
+-- 서점에 도서를 출고하는 출판사의 총 개수
+select count(DISTINCT publisher) as "출판사 개수"
+from book
+
+-- 모든 고객의 이름, 주소
+select name, address
+from customer
+
+-- 2014.7.4 ~ 7.7 사이에 주문받은 도서의 주문번호
+select orderid
+from orders
+where orderdate between '14/07/04' and '14/07/07'
+
+-- 2014.7.4 ~ 7.7 사이에 주문받지 않은 도서의 주문번호
+select orderid
+from orders
+where orderdate not between '14/07/04' and '14/07/07'
+
+-- 성이 김씨인 고객의 이름과 주소
+select name, address
+from customer
+where name like '김%'
+
+-- 성이 김씨이고 아로 끝나는 고객의 이름과 주소
+select name, address
+from customer
+where name like '김%' and name like '%아'
 
 -----------------------
 
@@ -61,172 +212,3 @@ where bookname like '_구%'
 >https://kbig.kr/ -> 인프라 -> 분석실습 관리
 
 -----------------------
-
-#### **4. Data Modeling**
-
->**4.1 개념적, 논리적 모델링**
-
-```
-- 현실 세계의 개념을 기반으로 개념적 모델링을 하는것. 
-	-> ER 다이어그램
-
-- 개념적 모델이 성립된 후 논리적(관계 데이터 모델) 모델링을 함.
-
-- 의사소통과 협업을 위해 이러한 속성들을 표현해 주는것. (문서화 작업의 일부)
-
-```
->**4.2 데이터베이스 생명주기**
-
-```
-요구사항 수집 및 분석 -> 설계 -> 구현 -> 운영 -> 감시 및 개선 -> 요구사항 수집 및 분석
-
-- 요구사항 수집 및 분석 : 현실 세계의 대상 및 사용자의 요구 등을 정리하고 분석함.
-
-- 개념적 모델링 : 핵심 엔티티 도출, ERD 작성
-
-- 논리적 모델링 : 각 개념을 구체화함. 상세속성을 정의하고 정규화함. ERD-RDB 모델링.
-
-- 물리적 모델링 : 생성 계획에 따라 DB개체를 정의하고 테이블과 인덱스를 설계함.
-```
-
->**4.3 세부사항**
-
-```
-[4.3.1 요구사항 수집 및 분석 단계]
-
-1. 실제 문서를 수집하고 분석
-2. 담당자와의 인터뷰나 설문조사로 요구사항 수렴
-3. 비슷한 업무의 기존 DB를 분석함
-4. 각 업무와 연관된 모든 부분을 살펴봄
-
-[4.3.2 개념적 모델링]
-
-개체(entity)를 추출하고 각 개체들간의 관계를 정의하여 ER다이어그램을 만드는 과정.
-```
-
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/3.jpg)
-
-```
-[4.3.3 논리적 모델링]
-
-1. 논리적 모델링이란
-
-만들어진 ER 다이어그램을 바탕으로 사용하려는 DMBS에 맞게 매핑함.
-
-실제 데이터베이스로 구현하기 위한 모델을 만드는 과정
-
-2. 논리적 모델링의 과정
-
-개념적 모델링에서 추출하지 않았던 모든 상세 속성들을 추출
-
-정규화 수행 : 밑에서 설명
-
-데이터 표준화 수행 : 데이터의 단위를 일치시킴. (여자, 여성, 여 같은 단위를 일치시켜야함.)
-
-3. 물리적 모델링시 트랜잭션, 저장 공간 측면에서 설계를 고려해야 함.
-```
-
------------------------
-
-#### **5. 데이터 이상 현상**
-
-```
-잘못 설계된 테이블로 삽입, 삭제, 수정 같은 데이터 조작을 할때 일어나는 현상
-
-(테이블에 투플을 삽입할 때 NULL값이 입력되거나, 연쇄삭제 현상이 일어나거나, 
-
-데이터의 일관성이 훼손되는 현상)을 데이터 이상 현상이라고 한다. 
-```
-
->> 데이터 이상 현상은 추후 정리
-
------------------------
-
-#### **6. 정규화**
-
-```
-이상 현상을 해결하기 위한 방법.
-
-주로 테이블을 세분화하고 나누는 과정.
-```
-
------------------------
-
-#### **7. Transaction**
-
-```
-트랜잭션은 DBMS에서 데이터를 다루는 논리적인 작업의 단위이다.
-
-보통 단일 SQL문을 사용하여 데이터를 다루지만, 여러개의 쿼리를 순차적으로 수행하기도 한다. 
-이러한 쿼리 묶음의 단위를 트랜잭션이라고 한다.
-```
-
------------------------
-
-#### **8. ER model**
-
-```
-개체 타입 : 약한 개체 타입과 강한 개체 타입이 있음. 
-
-강한 개체 타입은 독자적인 존재가 가능하고, 약한 개체 타입은 상위 개체 타입을 반드시 가지는 타입이다.
-```
-
-강한 개체는 직사각형, 약한 개체는 직사각형 두개를 겹친 모양으로 나타냄.
-
-```
-속성 : 속성은 개체가 가진 성질을 말하는데 속성의 유형으로 여러 가지가 있음. 
-
-속성, 키속성, 약한 개체의 식별자(약한 개체는 키 대신에 식별자를 가짐), 다중값 속성, 유도 속성, 복합 속성 등
-```
-
-만약 속성이 개체를 유일하게 식별할 수 있는 키일 경우, 속성 이름에 밑줄을 긋는 모양이 된다.
-
-약한 개체 타입의 개별 개체를 고유하게 식별하는 속성을 식별자(discriminator) 혹은 부분키(partial key)라고 함.
-
->관계 타입에서의 관계 대응 수 : 일대 일, 일대 다, 다대 다 등
-
------------------------
-
-#### **9. ER model의 관계 데이터 모델로의 사상**
-
->ER모델을 관계 데이터 모델로 사상시키는 과정.
-
-```
-- 9.1 개체 타입의 사상
-
-강한 개체 타입, 약한 개체 타입으로 나뉘는데 약한 개체 타입의 경우 
-
-자신의 키와 함께 강한 개체의 타입의 키를 외래키로 사상하여 자신의 기본키를 구성하게 된다.
-
-- 9.2 관계 타입의 사상
-```
-
->> 이후 내용은 추후 정리
-
------------------------
-
-#### **10. ER 다이어그램 예시**
-
-```
-① 교수(Professor)는 아이디(ssn), 이름(name), 나이(age), 직위(rank), 연구 분야(speciality)를 가진다.
-
-② 학과(Department)에는 학과번호(dno), 학과이름(dname), 학과사무실(office)이 있다.
-
-③ 대학원생(Graduate)은 아이디(ssn), 이름(name), 나이(age), 학위과정(deg_prog, 석사/박사)을 가진다.
-
-④ 과제(Project)는 과제번호(pid), 지원기관(sponsor), 개시일(start_date), 종료일(end_date), 예산액(budget)이 있다.
-
-⑤ 학과마다 그 학과를 운영(run)하는 교수(학과장이라고 한다)가 한 명씩 있다.
-
-⑥ 한 교수가 여러 학과에서 근무(work-dept)할 수 있는데, 이때 각 학과별로 참여백분율(pct_time)이 기록된다.
-
-⑦ 대학원생에게는 학위 과정을 밟을 전공학과(major)가 하나씩 있다.
-
-⑧ 대학원생에게는 어떤 과목을 들으면 좋을지 조언(advisor)해주는 선임 대학원생(학생조언자라고 한다)이 있다.
-
-⑨ 과제는 한 교수(연구책임자라고 한다)에 의해 관리(manage)된다.
-
-⑩ 과제는 한 사람 이상의 교수(공동연구책임자라고 한다)에 의해 수행(work-in)된다.
-
-⑪ 한 과제는 한 명 이상의 대학원생(연구조교라고 한다)에 의해 수행(work-prog)된다.
-```
