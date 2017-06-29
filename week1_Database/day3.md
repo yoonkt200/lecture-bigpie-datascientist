@@ -391,7 +391,7 @@ PROMPT Demonstration table build is complete.
 EXIT
 ```
 
-##**4.2 그룹 함수 에러해결 예제**
+## **4.2 그룹 함수 에러해결 예제**
 
 >> 그룹 함수를 이용해서 사원의 총 급여를 구하는 쿼리문
 
@@ -443,6 +443,17 @@ from emp;
 
 ```sql
 select count(DISTINCT JOB) 업무수 
+from emp;
+```
+
+## **4.2 그룹 함수 에러해결 예제**
+
+>> 그룹 함수를 이용해서 사원의 총 급여를 구하는 쿼리문
+
+> select sum(SA) from emp;
+
+```sql
+select sum(SAL) 
 from emp;
 ```
 
