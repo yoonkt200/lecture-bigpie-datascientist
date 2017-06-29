@@ -394,6 +394,7 @@ EXIT
 > **4.2 그룹 함수 에러해결 예제**
 
 >> 그룹 함수를 이용해서 사원의 총 급여를 구하는 쿼리문
+
 > select sum(SA) from emp;
 
 ```sql
@@ -402,6 +403,7 @@ from emp;
 ```
 
 >> 커미션(COMM) 총액을 구하는 쿼리문
+
 > select sum(COMM) from ep;
 
 ```sql
@@ -410,6 +412,7 @@ from emp;
 ```
 
 >> 급여 평균을 구하는 쿼리문
+
 > seect avg(SAL) from emp;
 
 ```sql
@@ -417,6 +420,7 @@ select avg(SAL) from emp;
 ```
 
 >> 가장 높은 급여와 가장 낮은 급여를 구하는 쿼리문
+
 > select max(SAL), min(SAL) fom emp;
 
 ```sql
@@ -425,6 +429,7 @@ from emp;
 ```
 
 >> 사원 테이블의 사원들 중에서 커미션을 받은 사원의 수를 구하는 쿼리문
+
 > select COMM from emp;
 
 ```sql
@@ -433,6 +438,7 @@ from emp;
 ```
 
 >> 중복 제거를 반영하여 담당업무의 개수를 구하는 쿼리문
+
 > select count(DT JOB) 업무수 from emp;
 
 ```sql
