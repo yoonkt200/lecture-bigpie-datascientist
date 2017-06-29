@@ -4,29 +4,33 @@
 -----------------------
 
 
-#### **1. 설치**
+#### **1. 실습**
 
 
-> **1.1 Oracle download (Windosw 7 64bit 11gR2 ver.)**
+demo_madang_init 열기 한 후에
+
+코드 ctrl + a -> ctrl + enter
 
 
-www.oracle.com -> 
-Menu -> Downloads -> Database -> Oracle
-Database -> 11gR2 ver File1,2 downloads. -> 두개의 압축폴더 하나의 폴더로 압축해제 -> 설치
+데이터베이스 접속 명령어 : conn
 
+select *
+from Book;
+> Book의 모든 것을 보여줌
 
-> **1.2 Developer Tools download**
+select phone
+FROM Customer
+WHERE name='김연아'
+> Customer중 name을 검색하여 phone을 보여줌 (name, phone을 다 보여주고 싶으면 select phone, name)
 
+select DISTINCT name 
+>중복 제거 셀렉트문
 
-download/developer download/Developer Tools--> SQL Developer --> 400MB Download
+select *
+from book
+where bookname like '_구%'
+> 책의 이름에서 두번째 문자가 '구'인 책들 찾음.
 
-
-> **1.3 SQL Developer initioalize**
-
-
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/1.JPG)
-
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/2.JPG)
 
 
 -----------------------
