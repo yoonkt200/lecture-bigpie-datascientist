@@ -391,7 +391,7 @@ PROMPT Demonstration table build is complete.
 EXIT
 ```
 
-> ##**4.2 그룹 함수 에러해결 예제**
+##**4.2 그룹 함수 에러해결 예제**
 
 >> 그룹 함수를 이용해서 사원의 총 급여를 구하는 쿼리문
 
