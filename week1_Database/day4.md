@@ -119,6 +119,11 @@ where saleprice >= 20000;
 
 ```
 
+
+-----------------------
+
+
+
 #### **3. 부속 질의**
 
 > 부속 질의 기본
@@ -157,6 +162,7 @@ select name
 from customer
 where custid in (select custid from orders)
 
+-- exists : 조건에 맞으면 결과에 포함시킴.
 -- 주문이 있는 고객의 이름과 주소를 보이시오
 select name, address
 from customer cs
@@ -165,3 +171,150 @@ where exists (select *
               where cs.custid=od.custid)
 
 ```
+
+> 부속 질의 연습
+
+```sql
+
+-- 박지성의 총 구매액
+select sum(saleprice)
+from customer, orders
+where customer.custid = orders.custid and customer.name like '박지성';
+
+-- 지성팍의 구매 도서 수
+select count(*)
+from customer, orders
+where customer.custid = orders.custid and customer.name like '박지성';
+
+-- 박지성이 구매한 도서의 출판사 수
+select count(DISTINCT publisher)
+from book
+where bookid in (select bookid
+                 from customer, orders
+                 where customer.custid = orders.custid 
+                 and customer.name like '박지성');
+                 
+-- 박지성이 구매한 도서의 이름, 가격, 정가와 판매가격의 차이
+select bookname, price, price-saleprice
+from orders, book
+where orders.bookid = book.bookid and
+      orders.custid in (select custid 
+                        from customer
+                        where name like '박지성')
+
+-- 박지성이 구매하지 않은 도서의 이름
+select bookname
+from book
+where bookid not in (select bookid
+                     from orders
+                     where custid like ( select custid
+                                         from customer
+                                         where name like '박지성'))
+
+-- 주문하지 않은 고객의 이름
+select name
+from customer cs
+where cs.custid not in (select od.custid
+                        from orders od)
+
+-- 주문 금액의 총액과 주문의 평균 금액
+select sum(saleprice), avg(saleprice)
+from orders
+
+-- 고객의 이름과 고객별 구매액
+select name, sum(saleprice)
+from customer, orders
+where customer.custid = orders.custid
+group by name
+
+-- 고객의 이름과 고객이 구매한 도서 목록
+select name, bookname
+from customer cs, book b1
+where exists (select *
+              from orders od
+              where od.custid = cs.custid and b1.bookid = od.bookid)
+
+-- 도서의 가격과 판매가격의 차이가 가장 많은 주문
+select max(price - saleprice)
+from orders, book
+where orders.bookid = book.bookid;
+
+-- 도서의 판매액 평균보다 자신의 구매액 평균이 더 높은 고객의 이름
+select name, avg(saleprice)
+from customer, orders
+where customer.custid = orders.custid
+group by name
+having avg(saleprice) > (select avg(saleprice)
+                         from orders);
+```
+
+
+-----------------------
+
+
+
+#### **4. 정의어**
+
+> CREATE 문
+
+```sql
+
+-- 생성예제 1
+CREATE TABLE NewBook(
+bookid      NUMBER,
+bookname    VARCHAR2(20),
+publisher   VARCHAR2(20),
+price       NUMBER
+);
+
+-- 생성예제 2
+CREATE TABLE NewCustomer(
+custid      NUMBER PRIMARY KEY,
+name        VARCHAR2(40),
+address     VARCHAR2(40),
+phone       VARCHAR2(30)
+);
+
+-- 생성예제 3
+CREATE TABLE NewOrders(
+orderid     NUMBER PRIMARY KEY,
+custid      NUMBER NOT NULL,
+bookid      NUMBER NOT NULL,
+saleprice   NUMBER,
+orderdate   DATE,
+FOREIGN KEY (custid) REFERENCES NewCustomer(custid) ON DELETE CASCADE
+);
+
+
+```
+
+> ALTER, DROP 문
+
+```sql
+
+-- 속성추가 예제 1
+ALTER TABLE NewBook ADD isbn VARCHAR2(13);
+
+-- 속성추가 예제 2
+ALTER TABLE NewBook MODIFY isbn NUMBER;
+
+-- 속성추가 예제 3
+ALTER TABLE NewBook DROP COLUMN isbn;
+
+-- 속성추가 예제 4
+ALTER TABLE NewBook MODIFY bookid NUMBER NOT NULL;
+
+-- 속성추가 예제 5
+ALTER TABLE NewBook ADD PRIMARY KEY(bookid);
+
+-- 삭제 예제 1
+DROP TABLE NewBook;
+
+-- 삭제 예제 2
+DROP TABLE NewCustomer; -- 에러가 날거임. 그 이유는 다른데서 얘를 참조하고 있기 때문.
+
+DROP TABLE NewOrders;
+DROP TABLE NewCustomer;
+
+```
+
