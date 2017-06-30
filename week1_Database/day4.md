@@ -450,9 +450,11 @@ having count(empno) >= 2
 
 ```
 
-```sql
+
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/4.JPG)
+
+```sql
 
 -- 6 세 명 이상의 사원이 있는 부서의 사원 이름을 보이시오
 select deptname, name
