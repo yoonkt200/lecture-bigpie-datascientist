@@ -318,3 +318,40 @@ DROP TABLE NewCustomer;
 
 ```
 
+> INSERT, UPDATE, DELETE 문
+
+```sql
+
+-- insert 예제 1
+INSERT INTO Book (bookid, bookname, publisher, price)
+       VALUES (11, '스포츠 의학', '한솔의학서적', 90000);
+
+-- insert 예제 2
+INSERT INTO Book (bookid, bookname, publisher)
+       VALUES (14, '스포츠 의학', '한솔의학서적');
+
+-- insert 예제 3
+INSERT INTO Book (bookid, bookname, price, publisher)
+       SELECT bookid, bookname, price, publisher
+       FROM Imported_book;
+
+-- update 예제 1
+UPDATE Customer
+SET address='대한민국 부산'
+WHERE custid=5;
+
+-- update 예제 2
+UPDATE Customer
+SET address = (select address
+               from customer
+               where name='김연아')
+where name like '박세리';
+
+-- delete 예제 1
+delete from customer
+where custid=5;
+
+-- delete 예제 2
+delete from customer -- 다른데서 외래키로 참조하기때문에 안됨.
+
+```
