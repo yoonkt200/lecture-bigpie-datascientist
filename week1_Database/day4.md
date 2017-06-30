@@ -355,3 +355,111 @@ where custid=5;
 delete from customer -- 다른데서 외래키로 참조하기때문에 안됨.
 
 ```
+
+
+> 최종 예제
+
+```sql
+
+CREATE TABLE Department(
+deptno int not null,
+deptname varchar(20),
+manager varchar(20),
+primary key(deptno)
+)
+
+CREATE TABLE Employee(
+empno int not null,
+name varchar(20),
+phoneno int,
+address varchar(20),
+sex varchar(20),
+position varchar(20),
+deptno int,
+primary key(empno),
+foreign key(deptno) references Department(deptno)
+)
+
+CREATE TABLE Project(
+projno int not null,
+projname varchar(20),
+deptno int,
+primary key(projno),
+foreign key(deptno) references Department(deptno)
+)
+
+CREATE TABLE Works(
+projno int not null,
+empno int not null,
+hoursworked int,
+primary key(projno, empno),
+foreign key(projno) references Project(projno),
+foreign key(empno) references Employee(empno)
+)
+
+insert into department values(1,'IT', '고남순');
+insert into department values(2,'Marketing', '홍길동');
+
+insert into employee values(1,'김덕성', 01012341232, '서울', '여', 'Programmer', 1);
+insert into employee values(2,'이서울', 01012323122, '서울', '남', 'Programmer', 1);
+insert into employee values(3,'박연세', 01076851231, '대전', '여', 'Salesperson', 2);
+insert into employee values(4,'홍길동', 01012341546, '서울', '남', 'Manager', 2);
+insert into employee values(5,'고남순', 01012311112, '서울', '여', 'Manager', 1);
+
+insert into project values(1, '데이터베이스구축', 1);
+insert into project values(2, '시장조사', 2);
+
+insert into Works values(1, 1, 3);
+insert into Works values(1, 2, 1);
+insert into Works values(2, 3, 1);
+insert into Works values(2, 4, 5);
+insert into Works values(1, 5, 1);
+
+-------------------------------------------------------------------
+
+-- 1
+select name
+from employee
+
+-- 2
+select name
+from employee
+where sex like '여'
+
+-- 3
+select name
+from employee
+where position like 'Manager'
+
+-- 4
+select name, address
+from employee
+where deptno in (select deptno
+                 from department
+                 where deptname like 'IT')
+                 
+-- 5 두명이상의 사원이 참여한 프로젝트의 번호, 이름, 사원의 수
+-- 그룹바이를 두개 이상 하면, 조합된 결과의 속성의 유니크함을 보는 것.
+select project.projno, projname, count(empno)
+from project, works
+where project.projno = works.projno
+group by project.projno, projname
+having count(empno) >= 2
+
+```
+
+```sql
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/4.JPG)
+
+-- 6 세 명 이상의 사원이 있는 부서의 사원 이름을 보이시오
+select deptname, name
+from employee, department
+where employee.deptno = department.deptno
+      and deptname in (select deptname
+                       from employee, department
+                       where employee.deptno = department.deptno 
+                       group by deptname
+                       having count(deptname) >= 3)
+
+```
