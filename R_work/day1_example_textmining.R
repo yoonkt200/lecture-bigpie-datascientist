@@ -40,7 +40,7 @@ library(rJava)
 library(KoNLP)
 
 Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
-useSejongDic()
+useSejongDic() # 오래걸림
 
 txt1 = gsub("bigdata", "빅데이터", txt0) # replace
 txt1 = gsub('[A-z]', "", txt1) # 대괄호(패턴이라는 의미) 안에 : A부터 z까지를 없앰. 영어 제거
