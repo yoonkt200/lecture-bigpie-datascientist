@@ -9,6 +9,8 @@
 
 > **1.1 기본 설치** : Java 최신버전과 R, Rstudio 설치.
 
+- 참고 : R 패키지 리스트 (https://cran.r-project.org/ - package)
+
 - cmd, terminal 에서 javac 명령어로 자바 설치 및 path 확인
 
 > **1.2 javac 명령어가 안될때 / 설정법 (윈도우 7 기준)**
@@ -224,4 +226,3 @@ prop.table(t1, 2) # 열의 합이 1이 되도록
 - 표본공분산(sample covariance) : 독립변수의 평균편차와 응답변수의 평균편차의 곱을 n-1로 나눈것.
 
 ```
-
