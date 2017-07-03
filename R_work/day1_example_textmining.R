@@ -32,4 +32,13 @@ txt0
 install.packages("KoNLP", dependencies = T) # dependencies : 연관 패키지 모듬 설치
 library(KoNLP)
 
-extractNoun
+useSejongDic()
+
+txt_n = extractNoun(txt0)
+str(txt_n)
+txt_t = table(unlist(txt_n))
+
+install.packages("wordcloud")
+library(wordcloud)
+
+wordcloud(names(txt_t), txt_t)
