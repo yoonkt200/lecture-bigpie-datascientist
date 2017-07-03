@@ -67,13 +67,74 @@ JAVA_HOME 이라는 변수를 추가하고, JAVA_HOME에는 java sdk 설치 경�
 
 #### **3. 통계이론**
 
-> 모집단 : 통계적 분석을 위한 관심의 대상이 되는 모든 사람, 응답 결과, 실험 결과, 측정값들 전체의 집합
+- 모집단 : 통계적 분석을 위한 관심의 대상이 되는 모든 사람, 응답 결과, 실험 결과, 측정값들 전체의 집합
 
-> 통계조사 방법 : 전수조사, 표본조사, 임의추출
+- 통계조사 방법 : 전수조사, 표본조사, 임의추출
 
 ```R
-sample(1:45, 6, replace = T) # 복원추출 샘플링
+#### 복원추출 샘플링
+sample(1:45, 6, replace = T) 
 # [1] 21 24  9 37 43 32
 
+#### 샘플링 예제
+### iris data에서 70%를 트레이닝 셋으로 비복원 랜덤 샘플링, 나머지를 테스트셋으로.
+ind = sample(1:nrow(iris), nrow(iris)*0.7, replace = F)
+A1 = iris[ind, ]
+View(A1)
 
+train = iris[ind, ]
+test = iris[-ind, ]
+
+#### 그래프를 이용해 데이터의 대략적인 패턴을 관찰해야 함.
+hist(iris$Petal.Length)
+```
+
+> feature들의 단위가 정규화되거나 동일한 단위가 아니라면, 계수와 관계없이 영향력이 제멋대로가 된다.
+
+> 따라서 단위마다 정규화, 표준화를 시켜줘야 함. R 에서는 각 변수마다 scale 함수로 시행.
+
+```R
+View(iris)
+scaled_data = scale(iris[, 1:4]) # 5는 label 이므로 안함.
+View(scaled_data)
+```
+
+- 자료의 종류
+
+```
+양적 자료 (Quantitative data : 숫자로 표현되며 숫자가 의미를 가짐.)
+
+질적 자료 or 범주형 자료 (Qualitative(categorical) data : 숫자에 의하여 표현되지 않고, 여러 개의 범주로 구분되는 자료)
+
+명목 자료 (nominal data) : 각 범주를 숫자로 대치한 자료
+
+> A형 1, B형 2...
+
+순서 자료 (ordinal data) : 순서의 개념을 갖는 질적 자료
+
+> 초등학교 1, 중학교 2, 고등학교 3...
+
+집단화 자료 (grouped data) : 양적자료를 구간별로 구분하여 범주형 자료로 변환한 자료. 
+
+> 90이상 A, 90이하 80 이상 B...
+
+```
+
+```R
+# 자료의 카테고리 숫자 확인
+nlevels(iris$Species)
+# [1] 3
+
+# 자료의 카테고리 확인
+levels(iris$Species)
+# [1] "setosa"     "versicolor" "virginica" 
+
+# table -> 관계요약
+table(survey$Sex, survey$W.Hnd)
+t1 = table(survey$Sex, survey$Smoke)
+
+# prop.table -> 관계요약을 비율로 표현.
+prop.table(t1) # 전체 합이 1이 되도록
+prop.table(t1, 1) # 행의 합이 1이 되도록
+prop.table(t1, 2) # 열의 합이 1이 되도록
 ```
