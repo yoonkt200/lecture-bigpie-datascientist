@@ -28,7 +28,7 @@ x1 = c(1,2,3,4,5,4,3,6,7,1000)
 sum(x1)/length(x1)
 mean(x1)
 
-# 위의 방식은 부적절하므로, 중앙값 이용.
+# 위의 방식은 부적절하므로, 중앙값(중위수) 이용.
 median(x1)
 
 # --> 둘 중에 적당한 방식을 찾아서 사용해야 함.
@@ -48,7 +48,7 @@ test = iris[-ind, ]
 summary(iris)
 
 # 1st ~ : 첫번째 4분위수.
-# median : 두번째 4분위수. 정중앙.
+# median : 두번째 4분위수. 정중앙. (중위수)
 # 3st : 세번째 4분위수.
 # mean : 산술평균
 
@@ -80,3 +80,15 @@ prop.table(t1, 1) # 행의 합이 1이 되도록
 prop.table(t1, 2) # 열의 합이 1이 되도록
 
 barplot(t1)
+
+#### 절사평균
+
+# 절사가 필요한 데이터 형태
+plot(iris$Petal.Length, iris$Sepal.Length)
+
+# 절사평균을 5% 한다고 할때, 일단 5%에 해당하는 데이터 길이를 구함.
+n = round((length(iris$Sepal.Length)*0.1)/2, 0 )
+# 5% 자름
+trimed = sort(iris$Sepal.Length)[n:length(iris$Sepal.Length)-n] # 괄호가 없어서 원하는 결과 안나옴
+trimed = sort(iris$Sepal.Length)[(n):(length(iris$Sepal.Length)-n)] # 괄호를 붙여줘야 연산 성립
+
