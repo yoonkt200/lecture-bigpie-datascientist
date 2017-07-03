@@ -22,6 +22,11 @@ JAVA_HOME 이라는 변수를 추가하고, JAVA_HOME에는 java sdk 설치 경�
 
 시스템 변수 path에 JAVA_HOME을 추가하고, bin을 하위 디렉토리로 가리킨다.
 ```
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/3.JPG)
+
+##### 다음처럼 되었으면 성공.
+
 > **1.3 javac 명령어가 안될때 / 설정법**
 
 
