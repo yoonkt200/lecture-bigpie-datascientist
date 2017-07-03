@@ -95,3 +95,10 @@ trimed = sort(iris$Sepal.Length)[(n):(length(iris$Sepal.Length)-n)] # 괄호를 
 # sd = 표준편차
 # rnorm = 랜덤으로 정규분포 생성
 hist(rnorm(100000, mean = 100, sd=3))
+
+# 상관계수 추출
+cor(iris[, 1:4])
+# 상관계수 검정
+cor.test(iris$Sepal.Length, iris$Petal.Length)
+
+
