@@ -4,29 +4,26 @@
 -----------------------
 
 
-#### **1. 설치**
+#### **1. 개발환경 구축**
 
 
-> **1.1 Oracle download (Windosw 7 64bit 11gR2 ver.)**
+> **1.1 기본 설치** : Java 최신버전과 R, Rstudio 설치.
 
+> cmd, terminal 에서 javac 명령어로 자바 설치 및 path 확인.\
 
-www.oracle.com -> 
-Menu -> Downloads -> Database -> Oracle
-Database -> 11gR2 ver File1,2 downloads. -> 두개의 압축폴더 하나의 폴더로 압축해제 -> 설치
+> **1.2 javac 명령어가 안될때 / 설정법**
 
+![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/1.JPG)
 
-> **1.2 Developer Tools download**
+![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/2.JPG)
 
+```
+JAVA_HOME 이라는 변수를 추가하고, JAVA_HOME에는 java sdk 설치 경로를 입력한다.
 
-download/developer download/Developer Tools--> SQL Developer --> 400MB Download
+시스템 변수 path에 JAVA_HOME을 추가하고, bin을 하위 디렉토리로 가리킨다.
+```
+> **1.3 javac 명령어가 안될때 / 설정법**
 
-
-> **1.3 SQL Developer initioalize**
-
-
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/1.JPG)
-
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/2.JPG)
 
 
 -----------------------
