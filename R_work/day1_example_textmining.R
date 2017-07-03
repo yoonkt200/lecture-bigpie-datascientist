@@ -1,4 +1,5 @@
 setwd("C:/Users/ajou/Desktop/DataScience/R_work")
+setwd("/Users/yoon/Documents/DataScience/R_work")
 
 # linux 명령어 기반, 워킹 메모리 변수 삭제
 rm(list = ls())
@@ -28,10 +29,18 @@ nchar(txt)
 txt0 = txt[nchar(txt)>1]
 
 #### 텍스트마이닝
-install.packages("KoNLP", dependencies = T) # dependencies : 연관 패키지 모듬 설치
+#install.packages("KoNLP", dependencies = T) # dependencies : 연관 패키지 모듬 설치
+#install.packages("rJava")
+
+# Sys.setenv(JAVA_HOME = "/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home")
+# Sys.getenv('JAVA_HOME')
+
+dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre/lib/server/libjvm.dylib")
+library(rJava)
 library(KoNLP)
 
-# useSejongDic()
+Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
+useSejongDic()
 
 txt1 = gsub("bigdata", "빅데이터", txt0) # replace
 txt1 = gsub('[A-z]', "", txt1) # 대괄호(패턴이라는 의미) 안에 : A부터 z까지를 없앰. 영어 제거
@@ -43,8 +52,10 @@ txt1 = gsub('  ', ' ', txt1) # 긴 공백 제거
 txt_n = extractNoun(txt1)
 #str(txt_n)
 txt_t = table(unlist(txt_n))
+txt_t
 
-install.packages("wordcloud")
+#install.packages("wordcloud")
 library(wordcloud)
 
-wordcloud(names(txt_t), txt_t)
+wordcloud(names(txt_t), txt_t) # for window
+wordcloud(names(txt_t), txt_t, family="AppleGothic") # fow mac
