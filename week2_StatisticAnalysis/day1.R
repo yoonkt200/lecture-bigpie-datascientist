@@ -82,7 +82,6 @@ prop.table(t1, 2) # 열의 합이 1이 되도록
 barplot(t1)
 
 #### 절사평균
-
 # 절사가 필요한 데이터 형태
 plot(iris$Petal.Length, iris$Sepal.Length)
 
@@ -92,3 +91,7 @@ n = round((length(iris$Sepal.Length)*0.1)/2, 0 )
 trimed = sort(iris$Sepal.Length)[n:length(iris$Sepal.Length)-n] # 괄호가 없어서 원하는 결과 안나옴
 trimed = sort(iris$Sepal.Length)[(n):(length(iris$Sepal.Length)-n)] # 괄호를 붙여줘야 연산 성립
 
+#### 데이터 척도 (z-점수)
+# sd = 표준편차
+# rnorm = 랜덤으로 정규분포 생성
+hist(rnorm(100000, mean = 100, sd=3))
