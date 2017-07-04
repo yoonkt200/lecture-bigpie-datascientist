@@ -6,6 +6,7 @@ rm(list = ls())
 # or rm(variable)
 
 # 엔터를 기준으로 텍스트를 읽어주는 함수
+# 이 파일의 맨 마지막에는 반드시 엔터가 있어야함 (\n)
 txt = readLines('big.txt',
           encoding = 'UTF-8')
 str(txt)
@@ -29,6 +30,15 @@ nchar(txt)
 txt0 = txt[nchar(txt)>1]
 
 #### 텍스트마이닝
+
+### 텍스트마이닝 전처리 과정
+# 사전 작업 (신조어 등록, 분야별 전문 용어 등)
+# 텍스트 핸들링
+# string to lower
+# 유사 단어를 한 단어로 통일
+# 불필요한 단어들 제거(특수문자 등)
+# 공백 제거
+
 #install.packages("KoNLP", dependencies = T) # dependencies : 연관 패키지 모듬 설치
 #install.packages("rJava")
 
@@ -38,6 +48,8 @@ txt0 = txt[nchar(txt)>1]
 dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre/lib/server/libjvm.dylib")
 library(rJava)
 library(KoNLP)
+library(stringi)
+library(stringr)
 
 Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
 useSejongDic() # 오래걸림
