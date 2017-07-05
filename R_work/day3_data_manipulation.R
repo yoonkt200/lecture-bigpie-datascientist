@@ -1,4 +1,6 @@
-setwd("/Users/yoon/Documents/DataScience/R_work") # write data file
+setwd("/Users/yoon/Documents/DataScience/R_work") 
+
+# write data file
 write.xlsx(iris, 'iris.csv')
 
 methods(plot) # check methods
@@ -109,7 +111,11 @@ sqldf("SELECT AVG(SL)
       FROM iris_rename
       WHERE SP='setosa'")
 
+# 가설, 차이 검정
 library("MASS")
 data("survey")
 str(survey)
 View(survey)
+model1 = t.test(Height ~ Sex, survey) # (A ~ B) 에서 A는 연속형, B는 factor형만 가능.
+model1
+
