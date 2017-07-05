@@ -181,7 +181,7 @@ sampleBy(Sepal.Length~Species, data = iris, frac = 0.1, systematic = T) # 종 �
 
 > **2.2 R에서 실제 가설 검정**
 
-```
+```R
 
 # 평균 180, 표준편차 10인 100개의 표본추출
 data1 = rnorm(100, mean=180, sd=10)
