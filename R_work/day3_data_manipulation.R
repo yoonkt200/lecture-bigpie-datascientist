@@ -94,7 +94,18 @@ sample(1:20, 200, replace = T, prob = c(1,3,3, rep(1,17))) # 2,3이 많이 뽑�
 sampleBy(Sepal.Length~Species, data = iris, frac = 0.1, systematic = T) # 종 별로 10%씩 샘플링
 
 ### stack, unstack example
+x_data = data.frame(a=c(3,2,9), b=c(5,3,2), c=c(4,5,7))
+x_stack = stack(x_data)
+summaryBy(values ~ ind, x_stack)
+
+unstack(x_stack, values~ind)
+
 ### melt example
+library(reshape2)
+m <- melt(french_fries, id.vars=1:4)
+str(french_fries)
+View(french_fries)
+m
 
 ### RMySQL package : pass
 
