@@ -1,3 +1,16 @@
+# 3일차 
+
+
+-----------------------
+
+
+#### **1. 데이터 조작**
+
+
+> **1.1 데이터 생성 및 저장**
+
+```R
+
 setwd("/Users/yoon/Documents/DataScience/R_work") # write data file
 write.xlsx(iris, 'iris.csv')
 
@@ -8,6 +21,12 @@ a2 = cars
 
 save(a1, a2, file = 'a.rdata') # rdata save and load
 load('a.rdata')
+
+```
+
+> **1.2 데이터 manipulation**
+
+```R
 
 x1 = matrix(1:15, nrow=5)
 x2 = matrix(1:15, nrow=5, byrow = T)
@@ -42,3 +61,17 @@ str(s1)
 str(iris)
 s1$Species = factor(s1$Species)
 str(s1)
+
+```
+
+-----------------------
+
+
+#### **2. 베이즈 정리**
+
+```
+
+
+```
+
+-----------------------
