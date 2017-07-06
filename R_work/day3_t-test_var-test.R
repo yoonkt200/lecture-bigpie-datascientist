@@ -20,3 +20,6 @@ data2 = rnorm(100, mean=160, sd=5)
 
 var.test(x=data1, y=data2)
 t.test(x=data1, y=data2, var.equal = F)
+
+# df는 자유도를 의미한다.
+# 자유도 : 통계적 추정을 할 때 표본자료 중 모집단에 대한 정보를 주는 독립적인 자료의 수를 의미. 일반적으로 n-1개.
