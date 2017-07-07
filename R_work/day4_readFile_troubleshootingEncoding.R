@@ -6,6 +6,8 @@ Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
 library(xlsx)
 
 data1 = read.xlsx("23.xlsx", sheetIndex = 1, startrow = 2, header = T, fileEncoding="UTF-8")
+data1 <- read_xlsx("23.xlsx")
+View(data1)
 # data1 = read.csv("price.csv", header = T, encoding = "UTF-8")
 data1 = read.csv("price.csv", header = T, fileEncoding="euc-kr")
 

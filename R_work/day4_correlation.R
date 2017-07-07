@@ -23,8 +23,8 @@ t.test(ss2, ss3, var.equal = F, paired = F)
 
 View(sleep)
 var.test(extra~group, data = sleep)
-t.test(extra~group, var.equal = T, data = sleep) # ???
-t.test(extra~group, var.equal = T, data = sleep, paired = T) # ??? 
+t.test(extra~group, var.equal = T, data = sleep)
+t.test(extra~group, var.equal = T, data = sleep, paired = T)
 # paired T인 이유는, 그룹 1과 2과 전후관계로 짝지어져 있기 때문
 
 # 어떨때는 낮은게 유의하고 어떨때는 높은게 유의함??
