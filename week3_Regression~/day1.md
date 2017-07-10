@@ -29,7 +29,26 @@
 - 최소 제곱법이란 오차의 제곱 합이 최소인 지점을 구하는 방법이다.
 ```
 
-> **1.2 회귀 진단 : 회귀 모형에 관한 진단**
+> **1.2 다중 선형 회귀**
+
+```R
+### 다중선형회귀
+n = nrow(iris)
+set.seed(200)
+ind = sample(1:n, n*0.7, replace = F)
+train = iris[ind,]
+test = iris[-ind,]
+
+model2 = lm(Sepal.Length ~ Sepal.Width + Petal.Length + Petal.Width, train)
+summary(model2)
+
+par(mfrow = c(2, 2))
+plot(model2)
+durbinWatsonTest(model2$residuals)
+```
+
+
+> **1.3 회귀 진단 : 회귀 모형에 관한 진단**
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/1.png)
 
@@ -82,7 +101,7 @@
 
 ```
 
-> **1.3 변수 선택**
+> **1.4 변수 선택**
 
 - 단계적 변수 선택
 
@@ -127,7 +146,19 @@ rmse2 = sqrt(mse2)
 c(mse1, mse2, rmse1, rmse2) # 1,2 중에 값이 작은 것이 더 좋은 모델이라고 할 수 있음.
 ```
 
-> **1.4 더미 변수**
+- 다중공선성 검증
+
+```R
+# 다중공선성 : Vif 값 기준은 10
+vif(model2) # 10이 넘는 값 두개가 있으므로 다중 공선성 문제 존재.
+
+# Sepal.Width Petal.Length  Petal.Width 
+#     1.26576     14.18554     13.44126 
+#
+# Petal.Length, Petal.Width은 다중 공선성에 문제가 있음.
+```
+
+> **1.5 더미 변수**
 
 - 회귀분석에서는 연속형 변수를 추론하게 되지만, 범주형 변수(factor)가 포함되는 경우가 많다.
 
@@ -173,3 +204,70 @@ Sepal.Length = 1.51742 + (Sepeal.width*0.53750
 > **2.1 SVM를 이용한 비선형 회귀**
 
 - SVM : 고차원의 입력에 대해, 변환함수를 통해 가중치를 찾게 됨
+
+```
+이론을 통해 배우는 회귀분석은 대부분 선형적인 모형을 가정하고 있다.
+
+하지만 실제의 데이터는 대부분 선형성을 만족하지 못한다. 
+
+따라서 실제적으로 데이터 분석에서 처리해야 하는 데이터는 비선형적인 모델이라고 할 수 있다.
+
+선형 모형은 독립변수에 따라 종속변수가 일정한 변화, 즉 선형성을 보이지만
+
+비선형 모형은 일정한 변화를 보이지 않는다. 수학적인 의미로는, df가 계속 변한다고 할 수 있다.
+
+사인함수나 지수함수처럼 선형적인 모양을 하지 않는 독립변수를 포함하는 모형을 일반적으로 비선형 모형이라 한다.
+```
+
+- R에서의 SVM 회귀 분석 코드
+
+```R
+### 비선형 회귀
+x = sample(0:2*pi, 1000, replace=T)
+y = sin(x)
+e = rnorm(1000, 0, 1)
+y_e = y+e
+plot(x, y_e)
+
+# 샘플데이터 생성
+x1 = seq(0, 2*pi, 0.01)
+data = data.frame()
+for(i in x1){
+  e1 = rnorm(10, 0, sample(1:3, 1, replace = T))
+  y1 = sin(i) + e1
+  x2 = rep(i, 10) # rep -> repeat의 약자
+  data1 = cbind(x2, y1)
+  data = rbind(data, data1)
+}
+plot(data, cex=0.1)
+
+# 선형 라인 그리기
+non1 = lm(y1~x2, data)
+line(data$x2, non1$fitted.values)
+abline(non1, col='red')
+
+### SVM 다중 회귀
+install.packages('e1071')
+library(e1071)
+
+svm1 = svm(y1~x2, data) 
+# 참고 : svm은 svc, scr로 classification / regression 용으로 나뉨. 
+# R에서는 y가 연속형이면 svr, y가 factor형이면 svc로 자동 실행함.
+pred1 = predict(svm1, newdata = data)
+points(data$x2, pred1, col = 'red', pch = "*", cex = 0.3)
+points(data$x2, sin(data$x2), col='blue', pch="#", cex=0.4)
+
+non_svm1 = lm(y1~x2, data)
+pred2 = predict(non_svm1, newdata = data)
+rmse_s = sqrt(mean(data$y1-pred1)^2)
+rmse_n = sqrt(mean(data$y1-pred2)^2)
+c(rmse_s, rmse_n) # --> svm과 non-svm 수치 비교
+# 참고 :  lm은 변수들의 계수, p-value등 각종 지표로 모델을 평가할 수 있지만,
+# svm은 rmse로 모델을 평가하는게 거의 유일한 방법. 따라서 그래프를 통해 직관으로 발견하거나 rmse로 평가하는게 일반적임.
+
+svm2 = svm(Species~., train)
+pred3 = predict(svm2, newdata = test)
+t1 = table(test$Species, pred3)
+diag(t1) # table의 대각선 값을 추출하는 함수
+sum(diag(t1)) / sum(t1) # 전체 중에 잘 맞힌것만 찾아낸 비율
+```
