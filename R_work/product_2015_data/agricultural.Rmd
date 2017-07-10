@@ -1,0 +1,1303 @@
+---
+title: "<a id='Title'></a>빅데이터 농산물 교재 : R을 중심으로"
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_retina: 2
+    fig_width: 8
+    theme: readable
+    toc: yes
+    toc_depth: 2
+  word_document: default
+---
+
+```{r environment, echo=F}
+knitr::opts_chunk$set(fig.align='center') # Doc format 일때 비활성화
+knitr::opts_chunk$set(warning=FALSE)
+```
+
+**************************
+
+* 필요 패키지 : `plyr`, `ggplot2`, `TSclust`, `zoo`, `gridExtra`, `urca`, `stringr`,`corrplot`, `RColorBrewer`, `gtable`, `dygraphs`, `xts`  
+* 필요 데이터 : `product.csv`, `weather.csv`, `code.csv`  
+
+**************************
+
+# 학습목표  
+  
+> 원 데이터에서는 유의미한 정보 추출이 불가능하므로 농축산물 가격 데이터와 기상 데이터 등을 분석 가능한 형태의 데이터로 변환한다.  
+  
+> 농축산물 가격 데이터를 이용한 데이터 시각화 및 데이터간의 연관성 분석 과정을 상세히 소개하고, 그 의미를 살펴본다.  
+  
+> 고급 클러스터링 기법을 이용한 연관성 분석을 실시하고 날씨 및 뉴스 데이터를 분석하여 농축산물 가격변동의 원인을 유추해 본다.  
+  
+# A. 상관 분석을 통한 지역별 돼지고기 가격 연관성 분석  
+  
+> 한국농수산식품유통공사에서 제공받은 2011년~2013년 농축산물의 소매가격 정보 중 지역별 돼지고기 평균 소매가격 자료를 이용하여 소매가격의 지역간 상관관계를 분석하고 이를 시계열 그림을 통하여 시각화한다.  
+  
+> 원 데이터를 분석 가능한 형태의 데이터로 변환하는 방법, 농축산물 변수의 상관관계 분석 및 데이터 시각화 등을 실습한다.  
+  
+## A.1 필요 패키지 불러오기  
+  
+> 아래 R 명령어는 여러 개의 패키지를 로딩하는데 유용한 수행방법이다.  
+
+```{r, message=FALSE, results="hide"}
+library1 <- c("plyr", "ggplot2", "stringr", "zoo", "corrplot", "RColorBrewer")
+unlist(lapply(library1, require, character.only=TRUE))
+```
+
+* 각 패키지의 역할을 간략히 설명하면 다음과 같음  
+
+패키지 명      | 설명
+---------------|---------------------------------------
+plyr           | 데이터 핸들링을 하기 위한 라이브러리
+ggplot2        | 시각화 기능 라이브러리
+stringr        | 문자열 핸들링을 하기 위한 라이브러리
+zoo            | 문자형 데이터를 데이트 형식으로 변환하기 위한 라이브러리
+corrplot       | 상관분석을 위한 라이브러리
+RcolorBrewer   | 색상 처리 기능 라이브러리
+
+<br>  
+  
+## A.2 데이터 불러오기  
+  
+> CSV 형태의 농축산물 데이터와 기상 데이터는 다음과 같이 읽어 들인다.  
+  
+```{r}
+product <- read.csv("Data/product.csv", header=T)
+code <- read.csv("Data/code.csv", header=T)
+```
+
+* `read.csv()` : 이 함수는 csv 파일을 읽는 기능을 함  
+  
+<br>  
+  
+## A.3 데이터 가공하기  
+  
+> 농축산물 데이터는 한국농수산식품유통공사에서 제공받은 2011년~2013년 농축산물 데이터를 수집하여 분석 목적에 맡게 품목, 지역 및 마트를 비식별화 처리를 통해 분석에 용이하게 편집하여 제공한다.  
+농산물 소매가격정보는 일반 농산물, 친환경 농산물 소매가격으로 일자, 부류, 품목, 지역, 마트 별 구분으로 구성이 되어 있다.  
+
+```{r}
+head(product, n=10)
+tail(product, n=10)
+```
+
+* `product`을 구성하는 변수에 대한 설명은 다음과 같음  
+    + 부류코드 : 농축산물의 범주에 따라 분류한 코드. 100(식량작물), 200(채소류). 300(특용작물), 400(과일류), 500(축산물)  
+    + 품목코드 : 품목에 따른 코드  
+    + 지역코드 : 지역에 따른 코드  
+    + 마트코드 : 마트에 따른 코드  
+  
+* `head()` : 데이터의 앞부분을 출력함  
+* `tail()` : 데이터의 뒷부분을 출력함  
+  
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 원시 데이터의 변수명을 한글에서 영어로 변환해준다.  
+데이터 `product`의 변수명은 date(일자), category(부류코드), item(품목코드), region(지역코드), mart(마트코드), price(가격)로 변환된다.  
+
+```{r}
+colnames(product) <- c('date','category','item','region','mart','price')
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+  
+<br>  
+  
+> 일별 농축산물의 평균 소매가격을 추출하기 위해 품목별 코드 번호를 확인하기 위한 `category` 오브젝트를 생성한다.   
+여기서 `category`에는 code데이터에서 구분코드설명이 품목코드에 해당하는 값만 추출되어 저장된다.  
+
+```{r}
+category <- subset(code, code$구분코드설명=="품목코드")
+category
+```
+
+* `subset()` : 데이터의 특정부분에 대해 조건을 만족하는 값을 반환해주는 함수임  
+  
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 원시 데이터의 변수명을 한글에서 영어로 변환해준다.  
+데이터 `category`의 변수명은 code(구분코드), exp(구분코드설명), item(분류코드), name(분류코드설명)으로 변환된다.  
+
+```{r}
+colnames(category) <- c('code', 'exp', 'item', 'name')
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+  
+<br>  
+  
+> 분석 대상은 돼지고기 소매가격이므로 일반농산물 소매가격 데이터 파일 `product`에서 품목코드(item)가 514인 돼지고기에 대한 데이터만 추출하여 `total.pig` 데이터를 생성한다.  
+
+```{r}
+total.pig <-product[which(product$item==514),]
+head(total.pig, n=10)
+```
+
+* `which()` : 벡터 또는 배열에서 주어진 조건을 만족하는 값이 있는 곳의 색인을 찾음  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 지역별 돼지고기의 평균 소매가격을 추출하기 위해 지역별 코드 번호를 확인하기 위한 `region` 오브젝트를 생성한다.  
+여기서 `region`에는 code데이터에서 구분코드설명이 "지역코드"에 해당하는 값만 추출되어 저장된다.  
+
+```{r}
+region <- subset(code, code$구분코드설명=="지역코드")
+region
+```
+
+* `subset()` : 데이터의 특정부분에 대해 조건을 만족하는 값을 반환해주는 함수임  
+  
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 원시 데이터의 변수명을 한글에서 영어로 변환해준다.  
+데이터 `region`의 변수명은 code(구분코드), exp(구분코드설명), region(분류코드), name(분류코드설명)으로 변환된다.  
+
+```{r}
+colnames(region) <- c('code', 'exp', 'region', 'name')
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+  
+<br>  
+  
+> 지역코드에 대한 데이터 `region`과 전체 돼지고기 가격에 대한 데이터 `total.pig`를 지역변수(region)를 기준으로 하나의 데이터 `day.pig`으로 만든다.  
+  
+```{r}
+day.pig <- merge(total.pig, region, by="region", all=T)
+head(day.pig,n=10)
+```
+
+* `merge()` : 두 데이터 프레임을 공통된 값을 기준으로 묶는 함수임  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> `day.pig` 데이터를 일별로 정렬한 후, 지역별로 돼지고기의 평균가격을 구하여 생성한 데이터 프레임을 지역별 이름으로 나누어 `total.pig.mean`이라는 리스트 형태의 데이터를 생성한다.  
+
+```{r}
+total.pig.mean <- dlply(ddply(ddply(day.pig, .(date), summarise, name=name, region=region, price=price),.(date, name), summarise, mean.price=mean(price)), .(name))
+```
+
+* `dlply()` : 데이터 프레임 형태를 품목별로 **list** 형태로 출력함  
+* `ddply()` : 데이터 프레임을 분리하여 함수를 적용시킨 후 데이터 프레임 형태로 출력하는 함수임  
+     + **summarise**는 다음에 나오는 식의 결과를 추가 변수로 출력하는 함수임  
+  
+<br>  
+  
+> 아래의 예제를 통해 함수 `ddply()`를 이해해 보도록 한다.  
+
+```{r}
+x <- data.frame(
+	Date=as.Date(c('2013-10-01', '2013-10-02', '2013-10-02', '2013-10-02', '2013-10-01', '2013-10-02', '2013-10-02')),
+	Category=factor(c('First', 'First', 'First', 'Second', 'Third', 'Third', 'Second')),
+	Frequency=c(10, 15, 5, 2, 14, 20, 3))
+head(x)
+```
+
+* 예제에 사용될 data frame 형태인 **x**를 생성함  
+    + 3개의 변수로 이루어져 있음  
+    + `Date`값이 `2013-10-02`이고 `Category`가 `First`인 자료가 두 개이며 이를 합쳐서 하나의 자료로 나타내야 함  
+  
+<br>  
+  
+> 데이터 프레임 **x**의 자료 중에 `Date`와 `Cagtegory`가 같은 자료들의 Frequency값을 합하여 하나의 자료값으로 만든 후 데이터 프레임 형태로 출력해보도록 한다.  
+
+```{r}
+ddply(x, .(Date, Category), summarize, Sum_F=sum(Frequency))
+```
+
+<br>  
+  
+> 다음은 함수 `dlply()`에 대한 예제이다.  
+데이터 프레임 **x**를 생성한 후 `dlply()` 함수를 적용하여 리스트 형태로 출력해 본다.  
+
+```{r}
+x <- data.frame(
+	Date=as.Date(c('2013-10-01', '2013-10-02', '2013-10-02', '2013-10-02', '2013-10-01', '2013-10-02', '2013-10-02')),
+	Category=factor(c('First', 'First', 'First', 'Second', 'Third', 'Third', 'Second')),
+	Frequency=c(10, 15, 5, 2, 14, 20, 3))
+```
+
+* 예제에 사용될 data frame 형태인 **x**를 생성함  
+    + 3개의 변수로 이루어져 있음  
+  
+<br>  
+  
+```{r}
+dlply(x, .(Date), summarize, Sum_F=sum(Frequency))
+```
+
+<br>  
+  
+> 각 지역별 데이터의 크기를 확인하기 위해 다음과 같은 절차를 시행한다.  
+
+```{r}
+for (i in 1 : length(total.pig.mean)){
+  cat(names(total.pig.mean)[i],"의 데이터의 길이는", nrow(total.pig.mean[[i]]),"이다","\n")
+}
+```
+
+* `cat()` : 주어진 값을 output으로 출력함  
+* `names()` : 리스트로 부터 변수명을 얻어 출력함  
+* `nrow()` : 행렬형태 데이터에 대한 row수를 읽어주는 기능을 함  
+  
+<br>  
+  
+> `day.pig`데이터에서 데이터 길이가 맞지 않은 일곱 지역을 제거하여 `day.pig` 데이터를 새롭게 생성한다.  
+
+```{r}
+day.pig  <- day.pig [! day.pig$name %in% c("의정부","용인","창원","안동","포항","순천","춘천" ),]
+```
+
+* `데이터[! 변수 %in% 조건,]` : 데이터에서 변수에 조건에 맞는 열을 제거함  
+    + `%in%` : 조건에 대해 일치여부를 boolean 형으로 출력하는 기능을 하는 연산자임  
+  
+<br>  
+  
+> `day.pig` 데이터를 지역(region), 일자(date)별로 돼지고기의 평균가격을 구하여 `pig.region.daily.mean` 데이터를 생성한다.  
+
+```{r}
+pig.region.daily.mean <- ddply(day.pig, .(name, region, date), summarise,  mean.price=mean(price))
+head(pig.region.daily.mean, n=10)
+```
+
+* `ddply()` : 데이터 프레임을 분리하여 함수를 적용시킨 후 데이터 프레임 형태로 출력하는 함수임  
+     + **summarise**는 다음에 나오는 식의 결과를 추가 변수로 출력하는 함수임  
+  
+* `pig.region.daily.mean`을 구성하는 변수에 대한 설명은 다음과 같음  
+     + `name` : 지역이름  
+     + `region` : 지역코드  
+     + `date` : 일자  
+     + `mean.price` : 전체지역의 일별 평균 가격  
+  
+<br>  
+  
+> date에서 month만 추출하여 지역(region), 월(month)별로 돼지고기의 평균가격을 구하여 `pig.region.monthly.mean` 데이터를 생성한다.  
+
+```{r}
+pig.region.monthly.mean <- ddply(pig.region.daily.mean, 
+    .(name, region, month=str_sub(pig.region.daily.mean$date,1,7)), 
+    summarise, mean.price=mean(mean.price))
+head(pig.region.monthly.mean, n=10)
+```
+
+* `str_sub()` : 문자열에서 뽑아내고자 하는 값만 출력함  
+     + `str_sub(date,1,7)` : date데이터 내에서 각 개체의 1~7번째 값(연~월)을 추출함  
+  
+* `pig.region.daily.mean`을 구성하는 변수에 대한 설명은 다음과 같음  
+     + `name` : 지역이름  
+     + `region` : 지역코드  
+     + `month`  : 월  
+     + `mean.price` : 전체지역의 월별 평균 가격  
+  
+<br>  
+  
+> date에서 year만 추출하여 지역(region), 연(year)별로 돼지고기의 평균가격을 구하여 `pig.region.yearly.mean` 데이터를 생성한다.  
+
+```{r}
+pig.region.yearly.mean <- ddply(pig.region.daily.mean, 
+    .(name, region, year=str_sub(pig.region.daily.mean$date,1,4)), 
+    summarise, mean.price=mean(mean.price))
+head(pig.region.yearly.mean, n=10)
+```
+
+* `str_sub()` : 문자열에서 뽑아내고자 하는 값만 출력함  
+     + `str_sub(date,1,4)` : date데이터 내에서 각 개체의 1~4번째 값(연도)을 추출함  
+  
+<br>  
+  
+## A.4 상관분석 및 데이터 시각화  
+  
+### A.4.1 월별 돼지고기 가격 시각화  
+  
+> 시계열도를 그리기 전에 시각화를 위해 월별 데이터를 가공한다.  
+
+```{r}
+pig.region.monthly.mean$month <- as.Date(as.yearmon(pig.region.monthly.mean$month, "%Y-%m"))
+```
+
+* `as.yearmon()` : **factor** 타입의 데이터를 월별 시계열로 변환함  
+    + `as.Date()` : 변환된 시계열 데이터를 **date** 타입으로 변환함  
+  
+<br>  
+  
+> 2011년부터 2013년까지 월별 돼지고기 가격의 변화를 지역별로 시계열 그림을 통해 시각화한다.  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.monthly.mean, aes(x=month, y=mean.price, colour=name, group=name)) + 
+    geom_line() + theme_bw() + geom_point(size=6, shape=20, alpha=0.5) + 
+    ylab("돼지고기 가격") + xlab("")
+```
+
+* `ggplot()` : 메인 함수로 데이터 셋과 표현할 데이터 변수명을 정의함  
+    + `aes(x=month, y=mean.price, colour=name, group=name))` : 월별 가격데이터를 지역별로 표현함  
+  
+* `geom_line()` : 데이터를 line형태로 시각화함  
+* `geom_point()` : 데이터를 point형태로 시각화함  
+* `theme_bw()` : 흰색 배경에 검은 색 눈금 선에 테마를 적용함  
+* `xlab(), ylab()` : x축 또는 y축의 이름을 지정함  
+  
+<br>  
+  
+### A.4.2 지역별 연간 돼지고기 평균가격 시각화  
+  
+> 2011년부터 2013년까지 지역별 돼지고기 연평균 가격의 변화를 지역별로 시각화한다.  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.yearly.mean, aes(x=year, y=mean.price, colour=name, group=name)) + 
+    geom_line() + theme_bw() + geom_point(size=6, shape=20, alpha=0.5) + 
+    ylab("돼지고기 가격") + xlab("")
+```
+
+* `ggplot()` : 메인 함수로 데이터 셋과 표현할 데이터 변수명을 정의함  
+    + `aes(x=year, y=mean.price, colour=name, group=name))` : 연별 가격데이터를 품목별로 표현함  
+  
+* `geom_line()` : 데이터를 line형태로 시각화함  
+* `geom_point()` : 데이터를 point형태로 시각화함  
+* `theme_bw()` : 흰색 배경에 검은 색 눈금 선에 테마를 적용함  
+* `xlab(), ylab()` : x축 또는 y축의 이름을 지정함  
+  
+<br>  
+  
+> 2011년부터 2013년까지 지역별 돼지고기 연평균 가격의 변화를 막대그래프를 이용하여 시각화한다.  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.yearly.mean, aes(x=name, y=mean.price, fill=factor(year))) +
+    theme_bw() + geom_bar(stat="identity", position="dodge", colour="white") + 
+    ylab("돼지고기 가격") + xlab("")
+```
+
+* `ggplot()` : 메인 함수로 데이터 셋과 표현할 데이터 변수명을 정의함  
+* `geom_bar()` : 막대그래프로 시각화하는 함수임  
+     + `stat="identity"` : 데이터내에 y축에 해당하는 값이 포함되어있을 때 사용. 즉, 이 명령어가 없으면 히스토그램 형태로 출력됨.  
+     + `position="dodge"` : 층이 겹치는 지점에 대해 구분하여 표시. 즉, 이 명령어가 없으면 각 지역별로 막대그래프 하나에 층으로 연도가 구분됨.  
+     + `colour="white"` : 배경화면에 대한 설정. white는 하얀바탕에 검은테두리를 사용함  
+* `xlab(), ylab()` : x축 또는 y축의 이름을 지정함  
+
+<br>  
+  
+> 2011년부터 2013년까지 지역별 돼지고기 일평균 가격의 분포를 상자그림을 이용하여 시각화한다.  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.monthly.mean, aes(x=name, y=mean.price, fill=name)) + 
+    theme_bw() + geom_boxplot() + 
+    xlab("") + ylab("돼지고기 가격")
+```
+
+* `ggplot()` : 메인 함수로 데이터 셋과 표현할 데이터 변수명을 정의함  
+* `geom_boxplot()` : 상자그림으로 시각화하는 함수임  
+* `theme_bw()` : 흰색 배경에 검은 색 눈금 선에 테마를 적용함  
+* `xlab(), ylab()` : x축 또는 y축의 이름을 지정함  
+  
+<br>  
+  
+> 2011년부터 2013년까지 지역별 돼지고기 일평균 가격의 연도별 분포를 상자그림을 이용하여 시각화한다.  
+
+```{r, echo=F}
+year.pig <- data.frame(name = pig.region.daily.mean$name, 
+    region = pig.region.daily.mean$region, 
+    date=pig.region.daily.mean$date, 
+    year=str_sub(pig.region.daily.mean$date,1,4), 
+    mean.price=pig.region.daily.mean$mean.price)
+```
+
+```{r fig.height=7, fig.width=10}
+ggplot(year.pig , aes(x=name, y=mean.price, fill=name)) + geom_boxplot() + 
+    theme_bw() + facet_wrap(~year, scales='fixed') + 
+    xlab("") + ylab("돼지고기 가격") + theme(axis.text.x=element_text(size=9))
+```
+
+* `geom_boxplot()` : 상자그림으로 시각화하는 함수임  
+* `facet_wrap()` : 격자 진열로 도식화하는 함수임  
+     + `~year` : 연도별로 나누어 도식화  
+     + `scales='fixed'` : 데이터 분포와 상관없이 고정된 y축을 사용  
+* `theme(axis.text.x=element_text(size=9))` : x축 값의 글씨 크기를 9로 조절하는 함수임  
+  
+<br>  
+  
+> 한 번에 가격변화를 비교하기 어려우므로 도시들 간의 상관관계를 분석하여 상관관계가 높은 도시들을 묶어 가격변화를 살펴보도록 하겠다.  
+
+```{r fig.height=7, fig.width=10}
+temp <- dlply(pig.region.daily.mean, .(name), summarise, mean.price)
+pig.region <- data.frame(서울=unlist(temp$서울),
+	부산=unlist(temp$부산),
+	대구=unlist(temp$대구),
+	인천=unlist(temp$인천),
+	광주=unlist(temp$광주),
+	대전=unlist(temp$대전),
+	울산=unlist(temp$울산),
+	수원=unlist(temp$수원),
+	청주=unlist(temp$청주),
+	전주=unlist(temp$전주),
+	제주=unlist(temp$제주))
+cor_pig <- cor(pig.region)
+corrplot(cor_pig, method="color", type="upper", order="hclust", addCoef.col = "white", tl.srt=0, tl.col="black", tl.cex=0.7, col=brewer.pal(n=8, name="PuOr"))
+```
+
+* `cor()` : 행렬의 분산공분산을 계산하는 함수임  
+* `corrplot()` : 상관행렬을 도식화하는 함수임  
+     + `method` : 상관행렬을 도식화하는데 사용되는 특징. circle(원), square(사각), ellipse(타원), ...  
+     + `type` : 상관행렬을 표시하는 특징. full(전체), upper(상삼각), lower(하삼각)  
+     + `order` : 상관행렬의 정렬방식을 나타내는 특징. original(데이터 순), hclust(계층 군집분석 순) , ...  
+     + `addCoef.col` : 상관계수가 표시되는 색  
+     + `tl.srt` : 텍스트 문자열의 표시 각도  
+     + `tl.col` : 텍스트 문자열의 색  
+     + `tl.cex` : 텍스트 문자열 크기  
+     + `col=brewer.pal(n=8, name="PuOr")` : 그래프 색 지정. `brewer.pal`을 사용하여 팔레트를 탐색함. PuOr이름의 팔레트에서 8가지 색을 추출하는 기능을 함  
+  
+<br>  
+  
+> 시계열도를 그리기 전에 월별 데이터를 가공한다.  
+
+```{r}
+pig.region.monthly.mean$month <- as.Date(as.yearmon(pig.region.monthly.mean$month, "%Y-%m"))
+```
+
+* `as.yearmon()` : **factor** 타입의 데이터를 월별 시계열로 변환함  
+    + `as.Date()` : 변환된 시계열 데이터를 **date** 타입으로 변환함  
+  
+<br>  
+  
+> 광주, 대구, 서울 세 지역의 2011년~2013년 월별 돼지고기 가격 시계열 그림을 통해 가격 변화가 매우 유사함을 확인할 수 있다.  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.monthly.mean[pig.region.monthly.mean$region %in% c(2401,2200,1101),], 
+    aes(x=month, y=mean.price, colour=name, group=name)) + 
+    geom_line() + theme_classic() + geom_point(size=6, shape=20, alpha=0.5) + 
+    ylab("돼지고기 가격") + xlab("")
+```
+
+* `ggplot()` : 메인 함수로 데이터 셋과 표현할 데이터 변수명을 정의함  
+    + `pig.region.monthly.mean[pig.region.monthly.mean$region %in% c(2401,2200,1101),]` : 지역코드가 광주, 대구와 서울인 데이터만 추출함  
+    + `%in%` : 조건에 대해 일치여부를 boolean 형으로 출력하는 기능을 하는 연산자임
+    + `aes(x=month, y=mean.price, colour=name, group=name))` : 월별 가격데이터를 품목별로 표현함  
+  
+<br>  
+  
+## A.5 데이터 저장하기  
+  
+> 추후 분석에 필요한 데이터를 csv 파일로 저장한다.  
+
+```{r}
+write.csv(pig.region, "Data/pig.region.csv", fileEncoding="UTF-8")
+write.csv(pig.region.monthly.mean, "Data/pig.region.monthly.mean.csv", fileEncoding="UTF-8")
+```
+
+<br>  
+  
+# B. 공적분 검정을 통한 농축산물 소매가격 연관성 분석  
+  
+> 한국농수산식품유통공사에서 제공받은 2011년~2013년 농축산물의 소매가격 정보 중 일별 축산물의 소매가격과 일별 농산물의 소매가격 자료를 이용하여 공적분 검정 시행 후 공적분이 있는 품목들을 시각화하고 의미를 찾는다.  
+  
+## B.1 필요 패키지 불러오기  
+  
+> 아래 R 명령어는 여러 개의 패키지를 로딩하는데 유용한 수행방법이다.  
+
+```{r message=FALSE, results="hide"}
+library2 <- c("plyr", "stringr", "urca", "ggplot2", "zoo", "gridExtra")
+unlist(lapply(library2, require, character.only = TRUE ))
+```
+
+* 각 패키지의 역할을 간략히 설명하면 다음과 같음  
+
+패키지 명   | 설명
+------------|------------------------------------------
+`plyr`      | 데이터 핸들링을 하기 위한 라이브러리
+`stringr`   | 문자열 핸들링을 하기 위한 라이브러리
+`urca`      | 공적분 검정을 하기 위한 라이브러리
+`ggplot2`   | 시각화 기능 라이브러리
+`zoo`       | 문자형 데이터를 데이트 형식으로 변환하기 위한 라이브러리
+`gridExtra` | 그래프 배열을 위한 라이브러리
+
+<br>  
+  
+## B.2 데이터 불러오기  
+  
+> CSV 형태의 농축산물 데이터와 코드설명 데이터는 다음과 같이 읽어 들인다.  
+
+```{r}
+product <- read.csv("Data/product.csv", header=T)
+code    <- read.csv("Data/code.csv", header=T)
+```
+
+* `read.csv()` : 이 함수는 csv 파일을 읽는 기능을 함  
+  
+<br>  
+  
+## B.3 데이터 가공하기  
+
+> 함수 read.csv에 읽혀 생성된 R 오브젝트 `product`를 출력하면 다음과 같다.
+
+```{r}
+str(product)
+```
+
+* `str(product)` : 변수가 6개, 자료의 수가 `r nrow(product)`인 **data.frame** 형태임  
+  
+<br>  
+  
+> 함수 read.csv에 읽혀 생성된 R 오브젝트 `product`의 앞부분을 출력하면 다음과 같다.  
+
+```{r}
+head(product, n=10)
+```
+
+* `head(product, n=10)` : product 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 원시 데이터의 변수명을 한글에서 영어로 변환해준다.   
+데이터 `product`의 변수명은 date(일자), category(부류코드), item(품목코드), region(지역코드), mart(마트코드), price(가격)로 변환된다.  
+
+```{r}
+colnames(product) <- c('date','category','item','region','mart','price')
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+  
+<br>  
+  
+> R 함수를 이용하여 product를 품목(item), 일자(date)별로 평균가격을 구하여 데이터를 생성하기 위해서는 다음과 같은 명령어를 수행한다.  
+
+```{r}
+temp <- ddply(product, .(item, date), summarise, mean.price=mean(price))
+head(temp, n=10)
+```
+
+* `ddply()` : 데이터 프레임 형태를 주어진 조건에 따라 정렬할 후 **summarise** 한 값을 **data frame** 형태로 출력함  
+    + `mean()`    : 품목별로 정렬된 일별 전체 지역의 가격에 대한 평균을 구함  
+    + `summarise` : 출력하고자 하는 값만을 요약함  
+  
+<br>  
+  
+> 일별 농축산물의 평균 소매가격을 추출하기 위해 품목별 코드 번호를 확인하기 위한 `category` 오브젝트를 생성한다.  
+여기서 `category`에는 code데이터에서 구분코드설명이 품목코드에 해당하는 값만 추출되어 저장된다.  
+
+```{r}
+category <- subset(code, code$구분코드설명=="품목코드")
+category
+```
+
+* `subset()` : 데이터의 특정부분에 대해 조건을 만족하는 값을 반환해주는 함수임  
+  
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 원시 데이터의 변수명을 한글에서 영어로 변환해준다.   
+데이터 `category`의 변수명은 code(구분코드), exp(구분코드설명), item(분류코드), name(분류코드설명)으로 변환된다.  
+
+```{r}
+colnames(category) <- c('code', 'exp', 'item', 'name')
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+  
+<br>  
+  
+> `merge()` 함수를 이용하여 `temp` 데이터와 `category` 데이터를 공통변수 `item` 으로 합쳐 `date.item.mean` 테이터를 생성한다.  
+
+```{r}
+date.item.mean <- merge(temp, category, by="item")
+head(date.item.mean, n=10)
+```
+
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 월별 데이터를 필요한 변수들만 구성하여 생성한다.  
+
+```{r}
+month.item.mean <- ddply(date.item.mean, .(name, item, month=str_sub(as.character.Date(date),1,7)), 
+  summarise, mean.price=mean(mean.price))
+head(month.item.mean, n=10)
+```
+* `str_sub()` : 문자열에서 뽑아내고자 하는 값만 출력함  
+     + `str_sub(date,1,7)` : date데이터 내에서 각 개체의 1~7번째 값(연~월)을 추출함  
+  
+* `month.item.mean`을 구성하는 변수에 대한 설명은 다음과 같음  
+    + `name`   : 품목이름  
+    + `item`   : 품목코드  
+    + `date`   : 일자  
+    + `month`  : 월  
+    + `mean.price` : 전체지역의 월별 평균 가격  
+  
+<br>  
+  
+> 공적분 검정을 위한 데이터를 만들기 위해 다음과 같은 명령어를 실행한다.  
+다음은 일간 품목별 평균 데이터이다.  
+
+```{r}
+temp <- dlply(date.item.mean, .(name), summarise, mean.price)
+daily.product <- data.frame(쌀=unlist(temp$쌀),
+	배추=unlist(temp$배추),
+	상추=unlist(temp$상추),
+	호박=unlist(temp$호박),
+	양파=unlist(temp$양파),
+	파프리카=unlist(temp$파프리카),
+	참깨=unlist(temp$참깨),
+	사과=unlist(temp$사과),
+	돼지고기=unlist(temp$돼지고기),
+	닭고기=unlist(temp$닭고기))
+head(daily.product, n=10)
+```
+
+* `dlply()`    : 데이터 프레임 형태를 품목별로 **list** 형태로 출력함  
+    + `unlist()`   : **list**형태를 **vector**형태로 변환함  
+    + `data.frame` : **vector**형태의 데이터를 **data frame**형태로 변환함  
+  
+<br>  
+  
+> 다음은 위와 같은 방법으로 월간 품목별 평균 데이터를 생성한다.  
+
+```{r}
+temp <- dlply(month.item.mean, .(name), summarise, mean.price)
+monthly.product <- data.frame(쌀=unlist(temp$쌀),
+	배추=unlist(temp$배추),
+	상추=unlist(temp$상추),
+	호박=unlist(temp$호박),
+	양파=unlist(temp$양파),
+	파프리카=unlist(temp$파프리카),
+	참깨=unlist(temp$참깨),
+	사과=unlist(temp$사과),
+	돼지고기=unlist(temp$돼지고기),
+	닭고기=unlist(temp$닭고기))
+head(monthly.product, n=10)
+```
+
+<br>  
+  
+## B.4 공적분 검정  
+  
+> 돼지고기와 다른 품목들 간의 공적분 관계가 있는지 검정을 한다.  
+  
+> 공적분의 개념을 직관적으로 이해하기 위하여, 먼저 간단한 두 시계열 변수의 경우를 생각하자. 두 시계열 $X_{t1}$과 $X_{t2}$에 대하여 적당한 상수 $a,b$가 존재하여 관계식 $a X_{t1} + b X_{t2} \sim 0$가 성립하면 두 시계열이 공적분관계가 있음을 의미한다.  
+  
+> 이 때 두 상수 $a,b$의 부호가 같은 경우 (음의 공적분)에는 두 시계열은 서로 다른 방향으로 움직임을 의미하며 부호가 다른 경우 (양의 공적분)에는 서로 같은 방향으로 움직임을 의미한다.  
+  
+> 공적분 분석에 대한 자세한 내용은 [금융계량분석(조담 저, 2006, 도서출판 청람)](http://book.naver.com/bookdb/book_detail.nhn?bid=7096837)을 참고하기 바란다.  
+  
+```{r}
+for (i in 1:9){
+  for (j in 1:9){
+    if ((i+j) < 11){
+      jc <- ca.jo(data.frame(daily.product[,i], daily.product[,i+j]), type="trace", K=2, ecdet="const")
+      if (jc@teststat[1] > jc@cval[1]) {
+        if(jc@V[1,1]*jc@V[2,1]>0){
+          cat( colnames(monthly.product)[i],"와" , colnames(monthly.product)[i+j], ": 음의 공적분 관계가 있다.", "\n")
+        } else {
+          cat( colnames(monthly.product)[i],"와" , colnames(monthly.product)[i+j], ": 양의 공적분 관계가 있다.","\n")
+        }}}}}
+```
+
+* `ca.jo()` : 두 변수간의 **요한슨 공적분 검정**을 시행함.  
+    + `data.frame()` : 공적분 검정을 시행할 두 변수를 데이터 프레임 형태로 변환함  
+    + `type="trace"` : Test type is trace statistic , without linear trend and constant in cointegration  
+    + `K=2` : The lag order of the series (levels) in the VAR.  
+    + `ecdet="const"` : for constant term in cointegration  
+  
+<br>  
+  
+> 공적분 검정을 더 알아보기 위해 아래 상추와 호박의 공적분 분석 결과를 살펴보자.  
+
+```{r}
+output <- ca.jo(data.frame(daily.product[,3], daily.product[,4]),
+	type="trace", K=2, ecdet="const")
+summary(output)
+```
+
+<br>  
+  
+> 위 결과에서 필요한 분석 결과를 추출하면 아래와 같다.  
+
+```{r}
+output@teststat[1]
+output@cval[1]
+output@V[1,1]
+output@V[2,1]
+```
+
+* `output@teststat` 그리고 `output@cval`:  
+    + r<=1이라는 귀무가설 하에서 10% 유의수준으로 teststat(**8.14**) > cval(10pct)(**7.52**)이면 공적분 관계가 있다고 본다.  
+  
+* `output@V` :  
+    + [1,1]의 값 1.00000과 [2,1]의 값 -1.05189의 곱이 음수이므로 양의 공적분 관계가 있다고 본다.  
+  
+<br>  
+  
+## B.5 데이터 시각화  
+  
+> 시계열도를 그리기 전에 시각화를 위해 월별 데이터를 가공한다.  
+
+```{r}
+month.item.mean$month <- as.Date(as.yearmon(month.item.mean$month, "%Y-%m"))
+```
+
+* `as.yearmon()` : **factor** 타입의 데이터를 월별 시계열로 변환함  
+    + `as.Date()` : 변환된 시계열 데이터를 **date** 타입으로 변환함  
+  
+<br>  
+  
+> 공적분 관계가 존재하는 변수들의 가격을 시각화 한다.  
+같은 방향으로 가격이 변화하는 품목들은 빨간색과 주황색으로 나타내고, 반대 방향으로 가격이 변화하는 품목들은 파란색과 하늘색으로 나타낸다.  
+  
+> 시계열 그림에 의하여 돼지고기는 상추 및 호박과 같은 방향으로 가격이 움직하고 있음을 확인할 수 있으며, 이와 반대로 닭고기는 상추 및 호박과 반대 방향으로 가격이 움직하고 있음을 확인할 수 있다.  
+  
+> 이로서 돼지고기와 닭고기는 서로 반대 방향으로 가격이 변화하고 있음을 유추해 볼 수 있다.  
+
+```{r}
+p1 <- ggplot(month.item.mean[month.item.mean$name %in% c("돼지고기", "상추"),], aes(x=month, y=mean.price, colour=name, group=name)) + 
+  geom_line() + scale_y_continuous(name="가격",limits=c(0,2500)) + 
+  theme_bw() + xlab("")
+
+p2 <- ggplot(month.item.mean[month.item.mean$name %in% c("상추","호박"),], aes(x=month, y=mean.price, colour=name, group=name)) + 
+  geom_line() + scale_y_continuous(name="가격",limits=c(0,3000)) + 
+  theme_bw() + xlab("")
+
+month.item.mean[month.item.mean$name %in% c("상추"),]$mean.price <- month.item.mean[month.item.mean$name %in% c("상추"),]$mean.price+5000
+
+p4 <- ggplot(month.item.mean[month.item.mean$name %in% c("닭고기","상추"),], aes(x=month, y=mean.price, colour=name)) + 
+  geom_line() + scale_y_continuous(name="가격",limits=c(5000,8000)) + 
+  theme_bw() + xlab("")
+
+month.item.mean[month.item.mean$name %in% c("호박"),]$mean.price <- month.item.mean[month.item.mean$name %in% c("호박"),]$mean.price+5000
+
+p5 <- ggplot(month.item.mean[month.item.mean$name %in% c("닭고기","호박"),], aes(x=month, y=mean.price, colour=name)) + 
+  geom_line() + scale_y_continuous(name="가격",limits=c(5000,8000)) + 
+  theme_bw() + xlab("")
+```
+
+```{r fig.height=7, fig.width=10}
+p1 + theme(legend.position="top") + scale_color_manual(values=c("red", "orange")) + 
+  geom_line(size=1.0)
+
+p2 + theme(legend.position="top") + scale_color_manual(values=c("red","orange")) + 
+  geom_line(size=1.0)
+
+p4 + theme(legend.position="top") + scale_color_manual(values=c("blue","skyblue")) + 
+  geom_line(size=1.0)
+
+p5 + theme(legend.position="top") + scale_color_manual(values=c("blue","skyblue")) + 
+  geom_line(size=1.0)
+```
+
+* `theme(legend.position="top")` : 범례의 위치를 상단으로 설정함  
+* `scale_color_manual()` : 그래프에 대한 색을 설정함  
+* `geom_line(size=0.7)` : line의 두께를 설정함  
+* `grid.arrange()` : ggplot 그래프를 정렬해서 나타냄  
+  
+<br>  
+  
+## B.6 데이터 저장하기  
+  
+> 추후에 군집분석에 필요한 데이터를 따로 CSV 파일로 저장한다.  
+
+```{r}
+write.csv(date.item.mean, "Data/date.item.mean.csv", fileEncoding="UTF-8")
+write.csv(month.item.mean, "Data/month.item.mean.csv", fileEncoding="UTF-8")
+```
+
+* `write.csv()` : 이 함수는 R 데이터를 **csv**파일로 저장하는 기능을 함  
+  
+<br>  
+  
+# C. 클러스터링 기법을 이용한 농축산물 데이터 분석  
+  
+> 한국농수산식품유통공사에서 제공받은 2011년~2013년 농축산물의 소매가격 정보 중 일별 농산물 평균 소매가격 자료와 지역별 돼지고기 평균 소매가격 자료를 이용하여 군집분석 시행 후 유사한 가격변화를 나타내는 그룹을 찾고 이를 시계열 그림으로 시각화 한다.  
+  
+> 클러스터링 기법에 대한 자세한 내용은 논문 [TSclust: An R Package for Time Series Clustering (Journal of Statistical Software, 2014, Pablo Montero와 Jose A. Vilar)](https://www.google.co.kr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=0ahUKEwj5-4TTx7_JAhVDUZQKHTazAQAQFggdMAA&url=http%3A%2F%2Fwww.jstatsoft.org%2Farticle%2Fview%2Fv062i01%2Fv62i01.pdf&usg=AFQjCNGEqHMaYFnNx-V4ar5CI4nPRn5VnA&sig2=4esfsANktqONlitwP97gTw&bvm=bv.108538919,d.dGo&cad=rja)을 참고하기 바란다.  
+  
+## C.1 필요 패키지 불러오기  
+  
+> 아래 R 명령어는 여러 개의 패키지를 로딩하는데 유용한 수행방법이다.  
+
+```{r, message=FALSE, results="hide"}
+library3 <- c("plyr", "TSclust", "zoo", "ggplot2" )
+unlist(lapply(library3, require, character.only = TRUE ))
+```
+
+* 각 패키지의 역할을 간략히 설명하면 다음과 같음  
+
+패키지 명 | 설명
+----------|------------------------------------
+`plyr`    | 데이터 핸들링을 하기 위한 라이브러리
+`TSclust` | 군집 분석을 하기 위한 라이브러리
+`ggplot2` | 시각화 기능 라이브러리
+`zoo`     | 문자형 데이터를 데이트 형식으로 변환하기 위한 라이브러리
+
+<br>  
+  
+## C.2 데이터 불러오기  
+
+> A장에서 가공한 지역별 돼지고기 일간 평균 소매가격에 대한 데이터 `pig.region`와 월간 평균 소매가격에 대한 데이터 `pig.region.monthly.mean`을 불러들여온다.  
+
+```{r}
+pig.region <- read.csv("Data/pig.region.csv", header=T, fileEncoding="UTF-8")[,-1]
+head(pig.region, n=10)
+
+pig.region.monthly.mean  <- read.csv("Data/pig.region.monthly.mean.csv", header=T, fileEncoding="UTF-8")[,-1]
+head(pig.region.monthly.mean, n=10)
+```
+
+* `read.csv()` : 이 함수는 csv 파일을 읽는 기능을 함  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 일간 품목별 평균 데이터 `date.item.mean`와 월간 품목별 평균 데이터 `month.item.mean`을 불러들여온다.  
+
+```{r}
+date.item.mean <- read.csv("Data/date.item.mean.csv", header=T, fileEncoding="UTF-8")[,-1]
+head(date.item.mean, n=10)
+
+month.item.mean <- read.csv("Data/month.item.mean.csv", header=T, fileEncoding="UTF-8")[,-1]
+head(month.item.mean)
+```
+
+<br>  
+  
+## C.3 데이터 가공하기  
+  
+> 농산물간의 군집 분석을 위해 축산믈은 제외하고 농산물 데이터만을 추출하여 `farm.product`데이터를 생성한다.  
+  
+```{r}
+temp <- dlply(date.item.mean, .(name), summarise, mean.price)
+farm.product <- data.frame(쌀=unlist(temp$쌀),
+	배추=unlist(temp$배추),
+	상추=unlist(temp$상추),
+	호박=unlist(temp$호박),
+	양파=unlist(temp$양파),
+	파프리카=unlist(temp$파프리카),
+	참깨=unlist(temp$참깨),
+	사과=unlist(temp$사과))
+head(farm.product, n=10)
+```
+
+* `dlply()`    : 데이터 프레임 형태를 품목이름별로 **list** 형태로 출력함  
+    + `unlist()`   : list형태를 vector형태로 변환함  
+    + `data.frame` : vector형태의 데이터를 data frame 형태로 변환함  
+  
+<br>  
+  
+## C.4 클러스터링 분석 및 데이터 시각화  
+  
+> 농산물 자료에 대하여 군집분석을 시행한다.  
+
+```{r fig.height=7, fig.width=10}
+plot(hclust(diss(farm.product,"COR")), axes = F, ann = F)
+```
+
+* `diss(farm.product,"COR")` : 데이터 프레임 형태의 farm.product를 correlation방법으로 계산함  
+    + `hclust()` : 계산된 오브젝트를 군집화함  
+    + `plot()` : 군집된 결과를 그림으로 나타냄  
+    + `axes = F` : 모든 축을 출력하지 않도록 설정함  
+    + `ann = F` : 모든 축에 대한 설명을 출력하지 않도록 설정함  
+  
+<br>  
+  
+> 시계열도를 그리기 전에 시각화를 위해 month 데이터를 가공한다.  
+
+```{r}
+month.item.mean$month <- as.Date(as.yearmon(month.item.mean$month, "%Y-%m"))
+```
+
+* `as.yearmon()` : **factor** 타입의 데이터를 월별 시계열로 변환함  
+    + `as.Date()` : 변환된 시계열 데이터를 **date** 타입으로 변환함  
+  
+<br>  
+  
+> 가장 유의한 군집으로 형성된 상추와 호박에 대한 시계열 그림을 그려본 결과, 가격변화가 매우 유사함을 확인할 수 있다.  
+
+```{r fig.height=7, fig.width=10}
+ggplot(month.item.mean[month.item.mean$name %in% c("상추", "호박"),], 
+    aes(x=month, y=mean.price, colour=name, group=name)) + geom_line() + 
+    theme_bw() + geom_point(size=6, shape=20, alpha=0.5) + 
+    ylab("가격") + xlab("")
+```
+
+* `ggplot()` : 메인 함수로 데이터 셋과 표현할 데이터 변수명을 정의함  
+    + `month.item.mean[month.item.mean$name %in% c("상추", "호박"),]` : 품목 이름이 상추와 호박인 데이터만 추출함  
+    + `%in%` : 조건에 대해 일치여부를 boolean 형으로 출력하는 기능을 하는 연산자임
+    + `aes(x=month, y=mean.price, colour=name, group=name))` : 월별 가격데이터를 품목별로 표현함  
+  
+* `geom_line()` : 데이터를 line형태로 시각화함  
+* `geom_point()` : 데이터를 point형태로 시각화함  
+* `theme_bw()` : 흰색 배경에 검은 색 눈금 선에 테마를 적용함  
+* `xlab(), ylab()` : x축 또는 y축의 이름을 지정함  
+  
+<br>  
+  
+> 돼지고기 자료에 대하여 군집분석을 시행한다.  
+
+```{r fig.height=7, fig.width=10}
+plot(hclust(diss(pig.region,"COR")), axes = F, ann = F)
+```
+
+* `diss(farm.product,"COR")`  : 데이터 프레임 형태의 farm.product를 **correlation** 방법으로 계산함  
+    + `hclust()` : 계산된 오브젝트를 군집화함  
+    + `plot()` : 군집된 결과를 그림으로 나타냄  
+    + `axes = F` : 모든 축을 출력하지 않도록 설정함  
+    + `ann = F` : 모든 축에 대한 설명을 출력하지 않도록 설정함  
+  
+<br>  
+  
+> 시계열도를 그리기 전에 시각화를 위해 월별 데이터를 가공한다.  
+
+```{r}
+pig.region.monthly.mean$month <- as.Date(as.yearmon(pig.region.monthly.mean$month, "%Y-%m"))
+```
+
+* `as.yearmon()` : **factor** 타입의 데이터를 월별 시계열로 변환함  
+    + `as.Date()` : 변환된 시계열 데이터를 **date** 타입으로 변환함  
+  
+<br>  
+  
+> 가장 유의하게 군집으로 형성된 대구와 광주, 부산과 울산의 시계열 그림을 그려본 결과 가격 변화가 매우 유사함을 확인할 수 있다.  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.monthly.mean[pig.region.monthly.mean$region %in% c(2200,2401),], 
+	aes(x=month, y=mean.price, colour=name, group=name)) + 
+geom_line() + theme_bw() + 
+geom_point(size=6, shape=20, alpha=0.5) + 
+ylab("돼지고기 가격") + xlab("")
+```
+
+<br>  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.monthly.mean[pig.region.monthly.mean$region %in% c(2100,2601),], 
+	aes(x=month, y=mean.price, colour=name, group=name)) + 
+geom_line() + theme_bw() + 
+geom_point(size=6, shape=20, alpha=0.5) + 
+ylab("돼지고기 가격") + xlab("")
+```
+
+<br>  
+  
+> 서로 다른 그룹으로 묶인 대구와 부산의 돼지고기 가격에 대한 시계열 그림을 그려본 결과, 초기에 서로 가격변화가 다른데, 이는 구제역 발생 후 대구는 큰 영향을 받았으나 부산은 그렇지 않았기 때문으로 추정된다.  
+  
+> 2011년 초반에 돼지고기 가격의 변동성이 컸던 점을 활용해 뉴스를 검색해 본 결과 다음과 같은 구제역 관련 뉴스를 찾을 수 있었다.  
+  
+* (http://news.kmib.co.kr/article/view.asp?arcid=0004564454&code=11151100)  
+  
+* (http://blog.daum.net/sun6377/5061880)  
+  
+* (http://blog.naver.com/PostView.nhn?blogId=giant50&logNo=140143825979)  
+
+```{r fig.height=7, fig.width=10}
+ggplot(pig.region.monthly.mean[pig.region.monthly.mean$region %in% c(2200,2100),], 
+	aes(x=month, y=mean.price, colour=name, group=name)) + geom_line() + 
+theme_bw() + geom_point(size=6, shape=20, alpha=0.5) + 
+ylab("돼지고기 가격") + xlab("")
+```
+
+<br>  
+  
+# D. 날씨 자료와 농산물 자료의 인과관계 분석  
+  
+> 한국농수산식품유통공사에서 제공받은 2011년~2013년 농축산물의 소매가격 정보 중 상추와 호박의 서울 평균 소매가격 자료와 2010년~2014 기상 정보 중 서울 지역의 일별 평균 강수량 자료를 시각화 하여 날씨와 농산물 가격간의 인과관계를 분석한다.  
+  
+## D.1 필요 패키지 불러오기  
+  
+> 아래 R 명령어는 여러 개의 패키지를 로딩하는데 유용한 수행방법이다.  
+
+```{r, message=FALSE, results="hide"}
+library4 <- c("plyr", "stringr","dygraphs", "zoo", "xts")
+unlist(lapply(library4, require, character.only = TRUE ))
+```
+
+* 각 패키지의 역할을 간략히 설명하면 다음과 같음  
+
+패키지 명   | 설명
+------------|----------------------------------------
+`plyr`      | 데이터 핸들링을 하기 위한 라이브러리
+`stringr`   | 문자열 핸들링을 하기 위한 라이브러리
+`dypraphs`  | 시계열 시각화 기능 라이브러리
+`zoo`       | 문자형 데이터를 데이트 형식으로 변환하기 위한 라이브러리
+`xts`       | 시계열 오브젝트를 생성하기 위한 라이브러리
+
+<br>  
+  
+## D.2 데이터 불러오기  
+  
+> CSV 형태의 농축산물 데이터와 기상 데이터는 다음과 같이 읽어 들인다.  
+
+```{r}
+product <- read.csv("Data/product.csv", header=T)
+weather <- read.csv("Data/weather.csv", header=T)
+code <- read.csv("Data/code.csv", header=T)
+```
+
+* `read.csv()` : 이 함수는 csv 파일을 읽는 기능을 함  
+  
+<br>  
+  
+## D.3 데이터 가공하기  
+  
+### D.3.1 농축산물 데이터 가공  
+  
+> 서울지역 코드번호를 확인하기 위해 code 오브젝트에서 지역코드만 추출하여 확인한다.  
+
+```{r}
+subset(code, 구분코드설명 %in% c("지역코드"))
+```
+
+* `subset()` : 전체 데이터에서 특정 조건을 만족하는 값을 출력함  
+    + `%in%` : 조건에 대해 일치여부를 boolean 형으로 출력하는 기능을 하는 연산자임
+  
+> 일별 농축산물의 평균 소매가격을 추출하기 위해 품목별 코드 번호를 확인하기 위한 `category` 오브젝트를 생성한다.  
+여기서 `category`에는 code데이터에서 구분코드설명이 품목코드에 해당하는 값만 추출되어 저장된다.  
+  
+```{r}
+category <- subset(code, code$구분코드설명=="품목코드")
+category
+```
+
+* `subset()` : 데이터의 특정부분에 대해 조건을 만족하는 값을 반환해주는 함수임  
+  
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 원시 데이터의 변수명을 한글에서 영어로 변환해준다.  
+
+```{r}
+colnames(product) <- c('date','category','item','region','mart','price')
+colnames(category) <- c('code', 'exp', 'item', 'name')
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+    + `product`의 변수명은 date, category, item, region, mart, price가 됨  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 서울지역의 가격만 추출하여 품목(item), 일자(date)별로 평균 가격을 구하여 품목에 대한 데이터 `category` 데이터와 merge 하여 `seoul.item` 데이터를 생성한다.  
+  
+> 일별 평균 가격을 생성하여 품목별로 정렬한 `seoul.item.mean` 데이터를 생성한다.  
+
+```{r}
+seoul.item <- merge(ddply(product[which(product$region==1101),], .(item, date),
+ summarise, mean.price=mean(price)), category, by="item", all=T)
+head(seoul.item, n=10)
+```
+
+* `merge()` : 두 데이터 프레임을 공통된 값 **item**을 기준으로 묶는 함수  
+* `ddply()` : 데이터 프레임 형태를 주어진 조건에 따라 정렬할 후 **summarise** 한 값을  **data frame** 형태로 출력함  
+    + `product[which(product$region==1101),]` : 서울지역코드에 맞는 조건을 만족하는 값이 있는 곳을 추출함  
+* `head()` : 데이터의 앞부분을 출력함  
+
+```{r}
+seoul.item.mean <- ddply(seoul.item, .(item, date), summarise, name, mean.price)
+```
+
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 `seoul.item.mean`의 변수명을 한글에서 영어로 변환해준다.  
+
+```{r}
+colnames(seoul.item.mean) <- c('item', 'date','item.name', 'mean.price')
+head(seoul.item.mean , n=10)
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+### D.3.2 기상 데이터 가공  
+  
+> 함수 read.csv에 읽혀 생성된 R 오브젝트 `weather`를 출력하면 다음과 같다.  
+
+```{r}
+str(weather)
+```
+
+* `str(product)` : 변수가 4개, 자료의 수가 `r nrow(weather)`인 **data.frame** 형태임  
+  
+<br>  
+  
+> `weather` 데이터는 전 지역 강수량과 평균기온이 입력된 데이터이다.  
+
+```{r}
+head(weather, n=10)
+tail(weather, n=10)
+```
+
+* `head()` : 데이터의 앞부분을 출력함  
+* `tail()` : 데이터의 뒷부분을 출력함  
+  
+<br>  
+  
+> R 서버에서 원활하게 데이터에 접근하기 위해 원시 데이터의 변수명을 한글에서 영어로 변환해준다.  
+
+```{r}
+colnames(weather) <- c('region','category','value','date')
+```
+
+* `colnames()` : 데이터 프레임의 열의 이름을 지정함  
+  
+<br>  
+  
+> `weather` 데이터를 지역(region)별 이름순으로 나누어 `region.weather` 리스트 형식의 데이터를 생성한다.  
+  
+```{r}
+region.weather <- dlply(weather, .(region))
+```
+
+* `dlply()`    : 데이터 프레임 형태를 품목별로 **list** 형태로 출력함  
+  
+<br>  
+  
+> `region.weather`에서 서울에 대한 기상데이터만 쓰기 위해 지역별로 나누어진 리스트의 이름들을 확인한다.  
+
+```{r}
+names(region.weather)
+```
+
+* `names()` : 리스트명을 출력함  
+  
+<br>  
+  
+> 서울에 대한 기상데이터를 확인한다.  
+
+```{r}
+head(region.weather[[41]], n=10)
+tail(region.weather[[41]], n=10)
+```
+
+* `head()` : 데이터의 앞부분을 출력함  
+* `tail()` : 데이터의 뒷부분을 출력함  
+  
+<br>  
+  
+> 분석 대상은 서울의 강수량 데이터이므로, `category`가 강수량인 값들만 추출하여 `init.seoul.rain` 데이터를 생성한다.  
+
+```{r}
+init.seoul.rain <- region.weather[[41]][which(region.weather[[41]][,2]=="강수량"),]
+head(init.seoul.rain, n=10)
+```
+
+* `which()` : 주어진 조건을 만족하는 값이 있는 것을 추출함  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 데이터를 날짜순대로 배열하여 `sort.seoul.rain` 데이터를 생성한다.  
+
+```{r}
+sort.seoul.rain <- dlply(init.seoul.rain, .(date))
+head(sort.seoul.rain, n=10)
+```
+
+* `dlply()`    : 데이터 프레임 형태를 품목별로 **list** 형태로 출력함  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 일별로 데이터값들이 2개씩 중복되어 있으므로 하나의 값만 추출하여 `resort.seoul.rain` 데이터를 생성한다.  
+
+```{r}
+resort.seoul.rain <- lapply(1:length(sort.seoul.rain), function(x) sort.seoul.rain[[x]][1,])
+head(resort.seoul.rain, n=10)
+```
+
+* `lapply()`  : **list**형태의 `sort.seoul.rain` 오브젝트를 정의한 함수 **function(x)** 으로 처리 후 **list** 형태로 출력함  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 반복문을 통해 `resort.seul.rain` 데이터에서 date와 value값만 추출하여 `seoul.rain` 데이터를 생성한다.  
+
+```{r}
+seoul.rain <- data.frame(date=unlist(lapply(1:length(resort.seoul.rain), function(x) resort.seoul.rain[[x]][,4])), rain=unlist(lapply(1:length(resort.seoul.rain), function(x) resort.seoul.rain[[x]][,3])))
+head(seoul.rain, n=10)
+```
+
+* `lapply()`  : **list**형태의 `resort.seoul.rain` 오브젝트를 정의한 함수 **function(x)** 으로 처리 후 **list** 형태로 출력함  
+    + `unlist()`   : **list**형태를 **vector**형태로 변환함  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> 분석을 용이하게 하기 위하여 NA로 입력된 강수량을 0으로 변환한다.  
+
+```{r}
+seoul.rain[,2][is.na(seoul.rain[,2])] <- 0
+head(seoul.rain, n=10)
+```
+
+* `is.na()` : 어떤 변수에 NA가 저장되어 있는지 확인함  
+* `변수[is.na(변수)] <- 0` : NA값을 0으로 변환함  
+  
+<br>  
+  
+### D.3.3 농산물 데이터와 기상 데이터의 가공  
+  
+> 농산물의 소매가격은 2011년부터 2013년까지의 데이터이고, 기상데이터는 2010년부터 2014년까지의 데이터이다.  
+함께 분석하기 위해서 date에 따라 두 데이터를 합쳐서 `seoul.item.rain` 데이터를 생성한다.  
+
+```{r}
+seoul.item.rain <- merge(seoul.rain, seoul.item.mean, by="date", all=T)
+head(seoul.item.rain)
+```
+
+* `merge()` : 두 데이터 프레임을 공통된 값 **item**을 기준으로 묶는 함수  
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+> NA값으로 표현된 2010년 농산물 데이터 열을 제거하고 2011년부터 2013년까지의 데이터를 생성한다.  
+
+```{r}
+seoul.item.rain <- ddply(seoul.item.rain[!seoul.item.rain$mean.price %in% NA,], .(item.name))
+head(seoul.item.rain)
+```
+
+* `ddply()` : 데이터 프레임 형태를 주어진 조건에 따라 정렬할 후 **summarise** 한 값을  **data frame** 형태로 출력함  
+* `데이터[! 변수 %in% NA,]` : 데이터에서 변수에 NA가 있는 열을 제거함  
+    + `%in%` : 조건에 대해 일치여부를 boolean 형으로 출력하는 기능을 하는 연산자임
+* `head()` : 데이터의 앞부분을 출력함  
+  
+<br>  
+  
+## D.4 데이터 시각화  
+  
+> 2011년부터 2013년까지 서울의 강수량 변화에 따른 상추의 가격 변화를 시각화하여 비교해본다.  
+빨간색으로 표현된 강수량이 크게 증가할 수록 상추와 호박의 가격이 크게 상승하는 것을 확인할 수 있다.  
+이로서 상추와 호박의 가격이 강수량에 큰 영향을 받고 있음을 알 수 있다.  
+  
+### D.4.1 `plot()`함수를 이용한 Graph Overlap  
+
+```{r fig.height=7, fig.width=10}
+par(mar=c(3, 5, 3, 5))
+plot(as.Date(seoul.item.rain[seoul.item.rain$item.name %in% c("호박"),]$date),
+ seoul.item.rain[seoul.item.rain$item.name %in% c("호박"),]$mean.price, 
+ type="l", col="blue", xlab="", ylab="", ylim=c(0,4000))
+mtext("가격", side=2, line=3)
+
+par(new=TRUE)
+plot(as.Date(seoul.item.rain[seoul.item.rain$item.name %in% c("상추"),]$date),
+    seoul.item.rain[seoul.item.rain$item.name %in% c("상추"),]$mean.price, 
+    type="l", col="green", xlab="", ylab="", ylim=c(0,4000), axes=FALSE)
+
+par(new=TRUE)
+plot(as.Date(seoul.item.rain[seoul.item.rain$item.name %in% c("상추"),]$date), 
+  seoul.item.rain[seoul.item.rain$item.name %in% c("상추"),]$rain, 
+  type="l", col="red", xlab="", ylab="", ylim=c(0,400), axes=FALSE)
+axis(4, ylim=c(0,400), col.axis="red", las=3)
+mtext("강수량", side=4, line=3)
+```
+
+* `par(mar)` : 현재 그래픽 장치의 그래픽 parameter의 텍스트 라인을 수정함  
+    + 순서는 bottem-left-top-right임  
+* `par(new=T)` : 첫 번째 plot을 지우지 않고 두번째 plot을 겹쳐그림  
+* `mtext()` : 현재 그래픽의 네 가장자리 중 하나에 텍스트를 기록함  
+    + side=2는 왼쪽 영역을 지정하고 side=4는 오른쪽 영역을 지정함  
+* `plot()` : 데이터를 그래프로 나타냄  
+    + `seoul.item.rain[seoul.item.rain$item.name %in% c("호박"),]$date` : 품목 이름이 호박인 데이터에서 날짜만 추출함  
+    + `seoul.item.rain[seoul.item.rain$item.name %in% c("호박"),]$mean.price` : 품목 이름이 호박인 데이터에서 가격만 추출  
+    + `seoul.item.rain[seoul.item.rain$item.name %in% c("상추"),]$date` : 품목 이름이 상추인 데이터에서 날짜만 추출함  
+    + `seoul.item.rain[seoul.item.rain$item.name %in% c("상추"),]$mean.price` : 품목 이름이 상추인 데이터에서 가격만 추출함  
+  
+<a href="#Title">back to Top</a>  
