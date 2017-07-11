@@ -4,20 +4,62 @@
 -----------------------
 
 
-#### **1. 데이터 전처리 모음**
+#### **1. 데이터 전처리 실제 데이터 적용**
 
 
 > **1.1 **
 
-```
-- 회귀분석은 독립변수와 종속변수간의 관계를 모델링하는 기법을 말한다.
+- 실제 공공데이터를 이용하여 데이터 전처리과정을 거친 후 시각화까지 실행해보았음.
 
-```
+- 다음 링크의 과정을 연습해 본 것으로, 누구나 접속이 가능.
 
-> **1.2 **
+- https://kbig.kr/edu_manual/html/prod_update/basic/product_chapter_2.html
 
 ```R
+Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
+library(plyr); library(ggplot2); library(stringr); library(zoo); library(corrplot); library(gridExtra); library(urca)
 
+product <- read.csv("product_2015_data/product.csv", header=T, sep=",", fileEncoding="UTF-8")
+code <- read.csv("product_2015_data/code.csv", header=T, sep=",", fileEncoding="UTF-8")
+
+colnames(product) <- c('date','category','item','region','mart','price')
+
+# 품목과 일자별로 평균을 구함
+temp = summaryBy(price~item+date, product, FUN = mean) # 1번 방법
+# temp <- ddply(product, .(item, date), summarise, mean.price=mean(price)) : 2번 방법
+
+category <- subset(code, code$구분코드설명=="품목코드")
+colnames(category) <- c('code', 'exp', 'item', 'name')
+date.item.mean <- merge(temp, category, by="item") # temp에다가 카테고리 정보를 merge함.
+
+# 월간 평균값으로 데이터를 파생
+library(lubridate)
+date.item.mean$month <- str_sub(as.character.Date(temp$date),1,7)
+month.item.mean <- summaryBy(price.mean~month+name+item, date.item.mean, FUN = mean)
+colnames(month.item.mean) <- c("month", "name", "item", "price.mean")
+# month.item.mean <- ddply(date.item.mean, .(name, item, month=str_sub(as.character.Date(date),1,7)), summarise, mean.price=mean(mean.price))
+# : 2번 방법
+
+# 일간 품목별 평균값을 나타내는 데이터
+date.item.mean$name
+date.item.mean <- droplevels(date.item.mean) # date.item.mean의 name의 level중 쓰레기값 제거(안쓰는데 들어온 애들이 있음)
+date.item.mean$name
+temp <- split(date.item.mean, date.item.mean$name)
+str(temp)
+
+daily.product <- data.frame(쌀=temp$쌀$price.mean,   배추=temp$배추$price.mean,
+                             상추=temp$상추$price.mean, 호박=temp$호박$price.mean,  
+                             양파=temp$양파$price.mean, 파프리카=temp$파프리카$price.mean,
+                             참깨=temp$참깨$price.mean, 사과=temp$사과$price.mean,
+                             돼지고기=temp$돼지고기$price.mean,   닭고기=temp$닭고기$price.mean)
+
+# 시계열 데이터 비교 시각화 그래프
+p1 <- ggplot(month.item.mean[month.item.mean$name %in% c("돼지고기", "상추"),], aes(x=month, y=price.mean, colour=name, group=name)) +
+geom_line() + scale_y_continuous(name="가격",limits=c(0,2500)) +
+theme_bw() + xlab("") + theme_bw(base_family = "AppleGothic") 
+
+p1 + theme(legend.position="top") + scale_color_manual(values=c("red", "orange")) +
+geom_line(size=1.0) + theme_bw(base_family = "AppleGothic") + scale_x_date()
 ```
 
 -----------------------
@@ -60,7 +102,7 @@ https://datascienceschool.net/view-notebook/d5478c5ed2044cb9b88fa2ef015eb3a4/
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/2.png)
 
-## 다음과 같은 시계열 데이터가 있다고 할때의 간단한 예제코드이다.
+#### 다음과 같은 시계열 데이터가 있다고 할때의 간단한 예제코드이다.
 
 ```R
 library(urca)
