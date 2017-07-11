@@ -1,3 +1,7 @@
+setwd("/Users/yoon/Documents/DataScience/R_work") 
+dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre/lib/server/libjvm.dylib")
+library(rJava)
+
 ### 단순선형회귀
 # 데이터를 분석하기에 앞서, 플롯으로 데이터의 경향을 파악하는 것이 중요.
 plot(cars)
