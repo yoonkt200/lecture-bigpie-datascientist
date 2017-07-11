@@ -95,10 +95,11 @@ geom_line(size=1.0) + theme_bw(base_family = "AppleGothic") + scale_x_date()
 R에서는 요한슨 공적분 검정 방정식을 사용하는데,
 
 이론적으로 이 이상 깊게 들어간다면, 통계학자가 되버리므로.. 자세한 설명은 링크에 남긴다.
-
-http://blog.naver.com/PostView.nhn?blogId=yonxman&logNo=220904870137
-https://datascienceschool.net/view-notebook/d5478c5ed2044cb9b88fa2ef015eb3a4/
 ```
+
+- http://blog.naver.com/PostView.nhn?blogId=yonxman&logNo=220904870137
+
+- https://datascienceschool.net/view-notebook/d5478c5ed2044cb9b88fa2ef015eb3a4/
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/2.png)
 
