@@ -38,7 +38,7 @@
 
 이러한 착시현상에 대한 올바른 검정방법이 공적분 검정이다.
 
-이를 위해 여러가지 수정 모형이 동원되지만, 
+이를 위해 여러가지 수정 모형이 선행되지만(단위근 검정 등),
 
 중요한 것은 공적분 검정을 통하여 단기, 장기적인 시계열 데이터의 인과관계 추정이 가능하다는 것이다.
 
@@ -47,4 +47,43 @@
 > 이 상황에서 두 시계열은 공적분 관계가 있다는 것을 의미한다.
 > 만약 두 상수가 부호가 같다면 음의 공적분(서로 다른 방향의 움직임)
 > 부호가 다르다면 음의 공적분(서로 같은 방향의 움직임)을 의미하게 된다.
+
+이론적인 개념은 다음과 같고, R에서는 urca라는 라이브러리를 통해 공적분 검정을 시행할 수 있다.
+
+R에서는 요한슨 공적분 검정 방정식을 사용하는데,
+
+이론적으로 이 이상 깊게 들어간다면, 통계학자가 되버리므로.. 자세한 설명은 링크에 남긴다.
+
+http://blog.naver.com/PostView.nhn?blogId=yonxman&logNo=220904870137
+https://datascienceschool.net/view-notebook/d5478c5ed2044cb9b88fa2ef015eb3a4/
+```
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/2.png)
+
+## 다음과 같은 시계열 데이터가 있다고 할때의 간단한 예제코드이다.
+
+```R
+library(urca)
+
+for (i in 1:9){
+  for (j in 1:9){
+    if ((i+j) < 11){
+      jc <- ca.jo(data.frame(daily.product[,i], daily.product[,i+j]), type="trace", K=2, ecdet="const")
+      if (jc@teststat[1] > jc@cval[1]){
+        if (jc@V[1,1]*jc@V[2,1]>0){
+          cat(colnames(monthly.product)[i],"와" , colnames(monthly.product)[i+j], ": 음의 공적분 관계가 있다.", "\n")
+        } else {
+          cat(colnames(monthly.product)[i],"와" , colnames(monthly.product)[i+j], ": 양의 공적분 관계가 있다.","\n")
+        }
+      }
+    }
+  }
+}
+
+# 상추 와 호박 : 양의 공적분 관계가 있다. 
+# 상추 와 사과 : 음의 공적분 관계가 있다. 
+# 상추 와 돼지고기 : 양의 공적분 관계가 있다. 
+# 상추 와 닭고기 : 음의 공적분 관계가 있다. 
+# 호박 와 닭고기 : 음의 공적분 관계가 있다. 
+# 사과 와 닭고기 : 음의 공적분 관계가 있다. 
 ```

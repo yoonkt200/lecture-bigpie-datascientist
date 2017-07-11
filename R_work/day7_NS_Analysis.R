@@ -17,7 +17,7 @@ date.item.mean <- merge(temp, category, by="item") # temp에다가 카테고리 
 
 # 월간 평균값으로 데이터를 파생
 library(lubridate)
-date.item.mean$month <- paste(year(ymd(temp$date)), gsub("월", "", months(ymd(temp$date))), sep = "-")
+date.item.mean$month <- str_sub(as.character.Date(temp$date),1,7)
 month.item.mean <- summaryBy(price.mean~month+name+item, date.item.mean, FUN = mean)
 colnames(month.item.mean) <- c("month", "name", "item", "price.mean")
 # month.item.mean <- ddply(date.item.mean, .(name, item, month=str_sub(as.character.Date(date),1,7)), summarise, mean.price=mean(mean.price))
@@ -61,3 +61,11 @@ for (i in 1:9){
     }
   }
 }
+
+# 시계열 데이터 비교 시각화 그래프
+p1 <- ggplot(month.item.mean[month.item.mean$name %in% c("돼지고기", "상추"),], aes(x=month, y=price.mean, colour=name, group=name)) +
+geom_line() + scale_y_continuous(name="가격",limits=c(0,2500)) +
+theme_bw() + xlab("") + theme_bw(base_family = "AppleGothic") 
+
+p1 + theme(legend.position="top") + scale_color_manual(values=c("red", "orange")) +
+geom_line(size=1.0) + theme_bw(base_family = "AppleGothic") + scale_x_date()
