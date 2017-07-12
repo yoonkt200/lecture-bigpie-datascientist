@@ -108,3 +108,6 @@ pig.region <- data.frame(서울=city1$price.mean,  부산=city2$price.mean,
                            청주=city9$price.mean, 전주=city10$price.mean, 제주=city11$price.mean)
 cor_pig <- cor(pig.region)
 corrplot(cor_pig, method="color", type="upper", order="hclust", addCoef.col = "white", tl.srt=0, tl.col="black", tl.cex=0.7, col=brewer.pal(n=8, name="PuOr"), family = "AppleGothic")
+write.csv(pig.region, "pig.region.csv", fileEncoding="UTF-8")
+write.csv(pig.region.monthly.mean, "pig.region.monthly.mean.csv", fileEncoding="UTF-8")
+write.csv(pig.region.daily.mean, "pig.region.daily.mean.csv", fileEncoding="UTF-8")

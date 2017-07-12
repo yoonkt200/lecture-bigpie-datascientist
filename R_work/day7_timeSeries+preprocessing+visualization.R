@@ -8,6 +8,7 @@ code <- read.csv("product_2015_data/code.csv", header=T, sep=",", fileEncoding="
 colnames(product) <- c('date','category','item','region','mart','price')
 
 # 품목과 일자별로 평균을 구함
+library(doBy)
 temp = summaryBy(price~item+date, product, FUN = mean) # 1번 방법
 # temp <- ddply(product, .(item, date), summarise, mean.price=mean(price)) : 2번 방법
 
@@ -19,6 +20,7 @@ date.item.mean <- merge(temp, category, by="item") # temp에다가 카테고리 
 library(lubridate)
 date.item.mean$month <- str_sub(as.character.Date(temp$date),1,7)
 month.item.mean <- summaryBy(price.mean~month+name+item, date.item.mean, FUN = mean)
+month.item.mean2 <- aggregate(data = date.item.mean, price.mean~month+name+item, mean)
 colnames(month.item.mean) <- c("month", "name", "item", "price.mean")
 # month.item.mean <- ddply(date.item.mean, .(name, item, month=str_sub(as.character.Date(date),1,7)), summarise, mean.price=mean(mean.price))
 # : 2번 방법
@@ -69,3 +71,6 @@ theme_bw() + xlab("") + theme_bw(base_family = "AppleGothic")
 
 p1 + theme(legend.position="top") + scale_color_manual(values=c("red", "orange")) +
 geom_line(size=1.0) + theme_bw(base_family = "AppleGothic") + scale_x_date()
+
+write.csv(month.item.mean, "month.item.mean.csv", fileEncoding="UTF-8")
+write.csv(date.item.mean, "date.item.mean.csv", fileEncoding="UTF-8")
