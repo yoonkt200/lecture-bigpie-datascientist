@@ -112,7 +112,7 @@ table(test$Species, pred3)
 
 어찌되었든 의사결정 트리의 메인 아이디어는 데이터를 스무고개처럼 분석하여, 판단에 이르는 패턴을 찾아내는 것이다.
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/1.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/3.png)
 
 
 ```
