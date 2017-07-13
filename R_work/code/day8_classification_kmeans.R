@@ -1,3 +1,4 @@
+setwd("C:/Users/ajou/Desktop/DataScience/R_work")
 setwd("/Users/yoon/Documents/DataScience/R_work")
 dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre/lib/server/libjvm.dylib")
 library(rJava)
@@ -28,6 +29,7 @@ k1$tot.withinss
 
 table(iris$Species, k1$cluster)
 
+### 최적의 k를 찾아내는 작업
 k0 = data.frame()
 for (i in 1:6){
   k2 = kmeans(iris[, 1:4], i, iter.max = 100)

@@ -1,3 +1,4 @@
+setwd("C:/Users/ajou/Desktop/DataScience/R_work")
 setwd("/Users/yoon/Documents/DataScience/R_work") 
 dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre/lib/server/libjvm.dylib")
 library(plyr); library(ggplot2); library(stringr); library(zoo);  library(TSclust)

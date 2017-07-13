@@ -1,5 +1,6 @@
 # https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+%28Diagnostic%29
 # data: https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
+setwd("C:/Users/ajou/Desktop/DataScience/R_work")
 setwd("/Users/yoon/Documents/DataScience/R_work")
 wbcd = read.csv("wisc_bc_data.csv", header = T, stringsAsFactors = F, sep = ",")
 str(wbcd)
@@ -21,11 +22,12 @@ test = wbcd_n[((nn*0.7)+1):(nn+1), ]
 library(class)
 pred1 = knn(train[,-1], test[,-1], train[,1], k=2) 
 
-# 훈련데이터(레이블 X), 테스트(레이블 X), 트레인 레이블, k개수(-> k-1개의 그룹으로 예측?)
+# 훈련데이터(레이블 X), 테스트(레이블 X), 트레인 레이블
 # pred1 -> test값에 대한 예측값 리스트
 t1 = table(test[,1], pred1)
 cor1 = sum(diag(t1)/sum(t1))
 
+### 최적의 k값을 찾아내기 위한 작업
 out1 = data.frame()
 for (i in 1:15){
   pred1 = knn(train[,-1], test[,-1], train[,1], k=i)
@@ -38,7 +40,3 @@ out1
 
 out3 = which.max(out1[,2])
 out1[out3,]
-## Q: 레이블이 n개일때 k값이 n개가 아닌데 더 정확한 이유
-## 만약 레이블이 B, M둘이어도, 나뉘어진 그룹이 10,20,30,40대라고 하면
-## 어떤 특정한 그룹에서 B, M이 들어맞을 확률이 높아져서 그렇다고 생각하면 됨.
-## 즉, 실제 레이블 수와 K 그룹 수를 맞춰줄 필요는 없음.

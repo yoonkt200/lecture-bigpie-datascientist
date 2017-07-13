@@ -1,3 +1,4 @@
+setwd("C:/Users/ajou/Desktop/DataScience/R_work")
 setwd("/Users/yoon/Documents/DataScience/R_work")
 teens = read.csv("snsdata.csv", header = T, stringsAsFactors = F, sep = ",")
 

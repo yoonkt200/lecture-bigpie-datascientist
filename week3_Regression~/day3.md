@@ -26,6 +26,47 @@
 
 ```
 
+```R
+wbcd = read.csv("wisc_bc_data.csv", header = T, stringsAsFactors = F, sep = ",")
+str(wbcd)
+# --> 데이터의 단위, scale이 맞지 않음. 데이터를 표준화시켜줘야 함.
+
+### 전처리 작업
+wbcd <- wbcd[ , -1]
+wbcd$diagnosis <- factor(wbcd$diagnosis)
+levels(wbcd$diagnosis)
+
+wbcd_n <- wbcd
+wbcd_n[, -1] <- scale(wbcd[, -1]) # 데이터 표준화 작업
+
+nn <- nrow(wbcd_n)
+train = wbcd_n[1:(nn*0.7), ]
+test = wbcd_n[((nn*0.7)+1):(nn+1), ]
+
+### KNN
+library(class)
+pred1 = knn(train[,-1], test[,-1], train[,1], k=2) 
+
+# 훈련데이터(레이블 X), 테스트(레이블 X), 트레인 레이블
+# pred1 -> test값에 대한 예측값 리스트
+t1 = table(test[,1], pred1)
+cor1 = sum(diag(t1)/sum(t1))
+
+### 최적의 k값을 찾아내기 위한 작업
+out1 = data.frame()
+for (i in 1:15){
+  pred1 = knn(train[,-1], test[,-1], train[,1], k=i)
+  t1 = table(test[,1], pred1)
+  cor1 = sum(diag(t1)/sum(t1))
+  out2 = cbind(i, cor1)
+  out1 = rbind(out1, out2)
+}
+out1
+
+out3 = which.max(out1[,2])
+out1[out3,]
+```
+
 > **1.2 K-means**
 
 ```
@@ -72,6 +113,27 @@
  - 등의 문제점들을 해결해야 한다.
 
  - K-means 아이디어에 기반한 많은 변형, 응용 알고리즘을 사용해야 각각의 문제점이 해결된다.
+```
+
+```R
+### Kmeans
+k1 = kmeans(iris[, 1:4], 3, iter.max = 100) 
+# iter.max 값은 평균을 업데이트하는 작업을 몇번 반복하는지에 관한 것
+k1$cluster
+k1$withinss # -> 그룹 내의 오차값의 합
+k1$tot.withinss
+
+table(iris$Species, k1$cluster)
+
+### 최적의 k를 찾아내는 작업
+k0 = data.frame()
+for (i in 1:6){
+  k2 = kmeans(iris[, 1:4], i, iter.max = 100)
+  k3 = cbind(i, k2$tot.withinss)
+  k0 = rbind(k0, k3)
+}
+plot(k0, type = 'b')
+k0[which.min(k0[,2]), ]
 ```
 
 > **1.3 K-NN vs K-means**
