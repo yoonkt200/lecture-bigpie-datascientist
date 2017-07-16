@@ -42,8 +42,10 @@ test2 = iris[ind3 == 2,]
 ### 특정데이터 추출과 필터링
 #install.packages('sampling')
 library(sampling)
-x = strata(c("Species"),
-         size = c(3, 3, 1),
+
+## 층화 임의 추출 -> 각 계층 원소로부터 임의 추출 (예 : 연령대별로 몇명씩 추출)
+x = strata(c("Species"), # 종별로 추출하겠다는 것.
+         size = c(3, 3, 1), # 종별로 3, 3, 1 개씩 추출하겠다는 것.
          method = "srswor", # srswor : replace F // srswr : replace T
          data = iris)
 
@@ -61,7 +63,7 @@ strata(c("Species", "Species2"), size=c(5,1,1,1,1,1), method="srswr", data=iris)
 
 library(doBy)
 sampleBy(~Species+Species2, # Spcecies 1, 2 를 묶은것을 하나의 그룹으로 보는 것.
-         frac = 0.3, 
+         frac = 0.3, # 그룹에서 30%만 추출하겠다는 것.
          data = iris)
 
 d1 = data.frame()
@@ -97,6 +99,15 @@ View(survey)
 xt = xtabs(~Sex+Exer, data = survey)
 xt
 
+# 집단이 3개 이상인 경우에도 카이제곱 검정이 가능.
+# data('survey')
+# View(survey)
+# survey$Sex <- as.character(survey$Sex)
+# survey[c(3,10,11,15,22,25), "Sex"] = "Othes"
+# survey$Sex <- as.factor(survey$Sex)
+# xt = xtabs(~Sex+Exer, data = survey)
+# xt # 경고메시지는 데이터수가 작아서 생긴것.
+
 chi1 = chisq.test(xt) # p-value가 0.06, 즉 0.05 이상이므로 성별과 운동 빈도는 관계가 있는 것 같다.
 chi1
 str(chi1)
@@ -108,7 +119,9 @@ fisher.test(xtabs(~W.Hnd+Clap, data = survey))
 table(survey$W.Hnd)
 chisq.test(table(survey$W.Hnd), p=c(.3, .7)) # 대상 데이터의 비율이 3:7 이다 라는 가설에 대한 검정
 
-### 맥니마 검정 ???
+###### 아래는 정규성, 분포 등의 검정 
+## -> ex. data가 정규 모형과 동일하냐는 질문의 p-value
+## 즉, p-value가 0.05 이상이면 정규성을 띤다거나 분포가 동일하다는 등의 것.
 
 ### shapiro test -> 정규성 여부 검정
 shapiro.test(rnorm(100))

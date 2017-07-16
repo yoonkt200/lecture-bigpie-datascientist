@@ -84,7 +84,7 @@ mapply(sum, list_data1$a, list_data1$b)
 ### doBy
 # install.packages("doBy")
 library(doBy)
-?summaryBy
+??summaryBy
 summary(iris)
 summaryBy(.~Species, iris) # 모든 attribute를 species를 기준으로 요약
 summaryBy(Sepal.Length~Species, iris, FUN = median) # Sepallegnth를 species 기준으로 요약, median func로.

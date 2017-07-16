@@ -5,6 +5,7 @@ Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
 
 library(MASS)
 data('survey')
+str(survey)
 
 ss1 = survey[, "Height"]
 ss1 = survey[survey$Sex=="Male", "Height"]
