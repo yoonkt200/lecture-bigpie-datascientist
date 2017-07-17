@@ -293,6 +293,8 @@ tree depth(or count), data feature, sampling % 정도가 있겠다.
 
 ```
 
+> **3.2 적용**
+
 ```R
 library(randomForest)
 
