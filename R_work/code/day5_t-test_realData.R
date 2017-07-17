@@ -34,8 +34,8 @@ g4$q2 = apply(g4[, 8:13], 1, FUN=mean)
 g4$q3 = apply(g4[, 14:17], 1, FUN=mean)
 
 # 비교하기 전에 어떻게 비교할것인지를 정하고 분석 방법을 결정함. (pair들을 맞추거나 하는 문제)
-var.test(g4$q2, g4$q3)
-t.test(x=g4$q2, y=g4$q3, var.equal = T, paired = T)
+var.test(g4$q2, g4$q3) # 등분산이라 할수있음
+t.test(x=g4$q2, y=g4$q3, var.equal = T, paired = T) # 차이없다고 할수있음
 
 # mean(as.matrix(g4[1, 2:7])) 참고 : matrix
 # a3 = data.frame(a=1:7, b=11:17, c=letters[1:7]) 참고 : data.frame

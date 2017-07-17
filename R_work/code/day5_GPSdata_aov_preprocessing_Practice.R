@@ -1,4 +1,4 @@
-setwd("/Users/yoon/Documents/DataScience/R_work") 
+setwd("/Users/yoon/Documents/DataScience/R_work")
 dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre/lib/server/libjvm.dylib")
 library(rJava)
 Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
@@ -11,14 +11,14 @@ colnames(app) = c("track_id", "id_android", "speed", "time", "distance", "rating
 table(tracking$track_id)
 table(app$id_android) # id_android는 유저id 라고 볼수있음.
 
-car_idx_list = which(app$car == 1)
-bus_idx_list = which(app$car == 2)
+car_idx_list = which(app$car_or_bus == 1)
+bus_idx_list = which(app$car_or_bus == 2)
 car1 = app[car_idx_list, ]
 bus1 = app[bus_idx_list, ]
 table(car1$rating)
 table(bus1$rating) 
 
-app$car_or_bus = as.factor(app$car_or_bus)
+app$car_or_bus = as.factor(app$car_or_bus) # anova분석에서 설명변수는 factor로 해야함.
 vehicle = aov(rating~car_or_bus, data=app)
 summary(vehicle)
 t = TukeyHSD(vehicle, "car_or_bus")

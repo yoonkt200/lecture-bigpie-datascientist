@@ -34,7 +34,7 @@ sum(test$Class==pred2)/nrow(test)
 # tree depth는 3~4를 벗어나면 성능이 떨어질 수 있음.
 
 ### pruning
-install.packages("tree")
+# install.packages("tree")
 library(tree)
 library(MASS)
 

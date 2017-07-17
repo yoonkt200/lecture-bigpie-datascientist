@@ -11,8 +11,9 @@ data1$Species=factor(data1$Species)
 
 
 ### 로지스틱 회귀
-m <- glm(Species~., data = data1, family = "binomial")
-m
+m <- glm(Species~., data = data1, family = "binomial") 
+# binomial 은, glm이 제공하는 회귀모델중 로지스틱이라는 것.
+m$fitted.values
 
 # 데이터셋 나눠서 로지스틱 회귀
 set.seed(1000)
@@ -43,7 +44,7 @@ ind = sample(1:nrow(iris),
 train = iris[ind, ]
 test = iris[-ind, ]
 library(nnet)
-(m <- multinom(Species~., data=train))
+(m <- multinom(Species~., data=train)) # 다항회귀는 nnet의 multinom을 사용.
 m$fitted.values
 m_class <- max.col(m$fitted.values)
 

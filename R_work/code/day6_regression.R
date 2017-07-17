@@ -46,6 +46,7 @@ plot(model2)
 durbinWatsonTest(model2$residuals)
 
 # 다중공선성 : Vif 값 기준은 10
+library(car)
 vif(model2) # 10이 넘는 값 두개가 있으므로 다중 공선성 문제 존재.
 
 model3 = lm(Sepal.Length ~ Sepal.Width, train)
@@ -99,10 +100,6 @@ summary(d1)
 
 nlevels(train$Species)
 levels(train$Species)
-d1 = stats::lm(Sepal.Length~., train)
-summary(d1)
-
-cbind(test$Species, as.numeric(test$Species))
 
 # 즉, 이런 식이 나오게 된다는것.
 Sepal.Length = 1.51742 + (Sepeal.width*0.53750 
