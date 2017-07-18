@@ -1,4 +1,4 @@
-setwd("/Users/yoon/Documents/DataScience/R_work/visualization") 
+setwd("/Users/yoon/Documents/DataScience/week4_Visualization") 
 
 ### 액셀 그래프는 지도나 이런 것들은 불가능. but R 그래프는 할 수 있다
 
