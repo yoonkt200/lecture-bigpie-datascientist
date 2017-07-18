@@ -65,7 +65,7 @@ View(test)
 이러한 로지스틱 모형을 사용하게 되면, 위의 두 가지 사항을 만족시키게 된다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/logistic.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/logistic.png)
 
 ```
 logistic function은 odds ratio를 logit 변환한 수식이라고 할 수 있다.
@@ -75,9 +75,9 @@ logit 변환은 오즈에 로그를 취한 함수로써, 어떠한 입력에도 
 이러한 수식과 아이디어를 실행하여 예측 및 분류 문제에 적용하는 것이 로지스틱 회귀 기법이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/odds.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/odds.png)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/logit.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/logit.png)
 
 ```
 로지스틱 회귀에서 모델 피팅은 결과 모델이 개선될 때 까지(주로 오차항을 이용한다) 계수를 반복적으로 수정해나가는 반복처리를 수행한다.
@@ -139,7 +139,7 @@ table(test$Species, pred3)
 다음의 그림은 의사결정트리를 나타내는 대표적인 예시인 타이타닉호 생존 결정 트리이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/3.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/3.png)
 
 ```
 결정트리에서 중요한 내용으로는 다음과 같은 크게 3가지가 있다.
@@ -173,11 +173,11 @@ table(test$Species, pred3)
 
 - 엔트로피 공식
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/ent.JPG)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/ent.JPG)
 
 - 지니 지수 공식
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/gini.JPG)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/gini.JPG)
 
 > **1.3 모델 학습 과정**
 
