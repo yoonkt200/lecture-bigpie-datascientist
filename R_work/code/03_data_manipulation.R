@@ -138,3 +138,12 @@ ind3 = ifelse(is.na(ind3),
               round(mean(ind3, na.rm = T),0),
               ind3)
 ind3
+
+### 구간데이터 생성, 분류법
+data("quakes")
+mini = min(quakes$depth) # 최대 최소 지정
+maxi = max(quakes$depth)
+r = ceiling((maxi-mini)/8) # 구간 크기
+inf = seq(mini, maxi, r) # 구간 생성
+quakes$depth.cat = factor(floor((quakes$depth - mini)/r), 
+                          labels = paste(inf, inf+r, sep = "-"))
