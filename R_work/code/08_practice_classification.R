@@ -27,3 +27,8 @@ teens_cluster$centers
 
 teens$cluster <- teens_cluster$cluster
 aggregate(data=teens, age ~ cluster, mean)
+
+teens[1:5, c("cluster", "gender", "age", "friends")]
+aggregate(data = teens, age ~ cluster, mean)
+aggregate(data = teens, female ~ cluster, mean)
+aggregate(data = teens, friends ~ cluster, mean)
