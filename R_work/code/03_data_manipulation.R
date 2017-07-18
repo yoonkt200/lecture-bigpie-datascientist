@@ -147,3 +147,32 @@ r = ceiling((maxi-mini)/8) # 구간 크기
 inf = seq(mini, maxi, r) # 구간 생성
 quakes$depth.cat = factor(floor((quakes$depth - mini)/r), 
                           labels = paste(inf, inf+r, sep = "-"))
+
+### tidy data format 변환법
+streetlamp <- read.csv('streetlamp.csv',header= T, fileEncoding = "euc-kr")
+streetlamp
+
+library(reshape2)
+
+## wide format
+##
+##    A1 A2 A3 
+## B1 10  7 12 
+## B2  9 11  6
+
+## long format
+##
+##    Aval Bval Value
+## 1  A1   B1   10 
+## 2  A1   B2    9
+## 3  A2   B1    7
+
+# wide format <-> long format 
+# melt : wide format -> long format 
+# cast : long format -> wide format
+
+tidy_streetlamp <- melt(streetlamp, value.name = "count") 
+head(tidy_streetlamp) 
+
+dcast_streetlamp <- dcast(tidy_streetlamp, X ~ variable, value.var = "count" ) 
+head(dcast_streetlamp) 
