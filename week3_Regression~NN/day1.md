@@ -50,7 +50,7 @@ durbinWatsonTest(model2$residuals)
 
 > **1.3 회귀 진단 : 회귀 모형에 관한 진단**
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~/week3_images/1.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/1.png)
 
 ```
 # 첫번째 플롯은 잔차 플롯으로, dist의 적합값과 잔차를 그린 플롯이다. 잔차의 등분산성과 독립성을 검정하기 위한 플롯이다.
