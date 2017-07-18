@@ -77,6 +77,9 @@ data2 = read.csv("data1.csv")
 str(data2)
 names(data2) = c("x1", "x2") # set column names
 
+# string + num 자동화 생성 -> 변수이름에 유용
+paste("TEST", 1:10)
+
 # install.packages("xlsx")
 dyn.load("/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre/lib/server/libjvm.dylib")
 library(rJava)
