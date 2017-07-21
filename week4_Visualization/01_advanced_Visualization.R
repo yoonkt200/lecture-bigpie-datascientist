@@ -1,4 +1,5 @@
 setwd("/Users/yoon/Documents/DataScience/week4_Visualization") 
+Sys.setlocale("LC_ALL", "ko_KR.UTF-8") # 한글 인코딩 가능하게 해줌
 
 # example 1
 library(networkD3)
@@ -58,7 +59,7 @@ qmap('seoul',zoom = 11, maptype = 'toner') # 지도를 흑백으로
 qmap('seoul',zoom = 11, maptype = 'watercolor')
 
 # 지도위에 레이어 얹기
-seoul_map <- qmap('seoul', zoom = 11, maptype = 'roadmap')
+seoul_map <- qmap('seoul', zoom = 11, maptype = 'toner')
 seoul_map
 
 # point 찍기
@@ -66,3 +67,9 @@ seoul_map + geom_point(data = station_lonlat,
                        aes(x = lon, y = lat),
                        colour = 'red',
                        size = 2.5)
+
+seoul_map + geom_text(data = station_lonlat,
+                      aes(x = lon, y = lat),
+                      label = station_lonlat$station_list,
+                      colour = 'red',
+                      size = 2.5, family = "AppleGothic")
