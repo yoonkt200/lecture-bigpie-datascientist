@@ -269,14 +269,137 @@ from package import calculator
 이렇게 어디서든 사용할 수 있다는 것. (site-packages 하위에 있으므로, sys.path에 속하게 됨.)
 ```
 
+
 -----------------------
 
 
-#### **3. 언더스코어의 의미**
+#### **3. 클래스와 오브젝트**
+
+```python
+### 클래스에서 self, cls, static의 역할
+# class는 붕어빵 빵틀, object는 붕어빵이라고 비유가 가능.
+# self는 붕어빵 각각이 가지는 속성이고, cls는 붕어빵 빵틀이 가지는 속성임.
+# 클래스의 멤버변수를 선언할때 아래처럼 선언하면 빵틀 변수가 되는 것이고,
+# init 에서 self로 선언하면 붕어빵의 변수가 되는 것이다.
+class InstanceCounter:
+    count = 0
+    count2 = 0
+    
+    def __init__(self):
+        self.count3 = 0
+        InstanceCounter.count += 1
+        self.count2 += 1
+        
+    @classmethod
+    def print_instance_count(cls):
+        print(cls.count)
+        print(cls.count2)
+        
+    @staticmethod
+    def print_static_count():
+        print(InstanceCounter.count)
+        print(InstanceCounter.count2)
+        
+a = InstanceCounter() 
+InstanceCounter.print_instance_count()
+InstanceCounter.print_static_count()
+
+b = InstanceCounter()
+InstanceCounter.print_instance_count()
+InstanceCounter.print_static_count()
+
+c = InstanceCounter()
+c.print_instance_count()
+InstanceCounter.print_static_count()
+
+
+### 예제2
+class Car:
+    count = 0
+    
+    def __init__(self):
+        Car.count += 1
+        
+    def print(self):
+        print(self.count)
+        
+a = Car()
+a.print()
+b = Car()
+b.print()
+c = Car()
+c.print() 
+# --> init 할때마다 붕어빵 빵틀의 속성 자체가 변하고 있음,
+# 새로 Car 오브젝트를 생성하면 붕어빵의 기본 count가 빵틀에서 나온 속성으로 설정됨.
+
+
+### 클래스의 퍼블릭, 프라이빗
+class HasPrivate:
+
+    def __init__(self):
+        self.public = "Public"
+        self.__private = "Private"
+
+    def print_from_internal(self):
+        print(self.public)
+        print(self.__private)
+        
+obj = HasPrivate()
+obj.print_from_internal()
+print(obj.public)
+print(obj.__private) # error -> __membervariable은 외부접근 불가.
+
+
+### 상속
+class Base:
+    def base_method(self):
+        print("base_method")
+                        
+class Derived(Base):
+    pass
+
+base = Base()
+base.base_method()
+derived = Derived()
+derived.base_method()
+```
+
+-----------------------
+
+
+#### **4. 언더스코어의 의미**
 
 ```
 타 언어에서 언더스코어 '_'은 단순히 스네이크 표기법 정도로만 사용이 되곤 한다. 파이썬에서 언더스코어는
 조금 특별한 기능을 하는데, 이는 파이썬이 인터프리터 언어라는 속성에 기인한다.
+```
 
+> **4.1 파이썬 인터프리터에서의 사용**
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonBasic/week5_images/1.png)
 
 ```
+위 그림은 IPython으로 파이썬 인터프리터를 실행한 것이다. 
+언더스코어는 다음에서 볼 수 있듯, 마지막 변수를 저장하는 역할을 한다.
+```
+
+> **4.2 특정 값을 skip할 때**
+
+
+
+-----------------------
+
+
+#### **5. 파일 입출력**
+
+> **5.1 기본 입력**
+
+- open() 함수와 함께 with ~ as문을 사용하면 명시적으로 close() 함 수를 호출하지 않아도 파일이 항상 닫힘.
+- with ~ as 문을 사용하는 방법은 다음과 같음.
+
+```python
+with open('test.txt', 'r') as file: 
+    str = file.read()
+    print(str)
+```
+
