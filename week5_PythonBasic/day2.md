@@ -172,7 +172,7 @@ class empty_class:
 
 #### **2. 모듈과 패키지**
 
-> **2.1 모듈과 패키지 개념**
+> **2.1 모듈의 개념**
 
 - 모듈은 파이썬 파일 안에 함수, 클래스 등으로 modulation이 되어있는 기능들이 있는 것의 단위를 말한다.
 - 즉, 다른 파이썬 파일에서 작성한 기능들을 module이라는 단위로 관리하며, 불러오는 것이 가능하다는 것.
@@ -180,7 +180,6 @@ class empty_class:
 - 사용자 생성 모듈 : 프로그래머가 직접 작성한 모듈
 - 서드 파티(3rd Party) 모듈 : 파이썬 재단도 프로그래머도 아닌 다른 프로그래머, 또는 업체에서 제공한 모듈
 - import, from, as, * 등으로 사용한다. 너무 쉬운 내용이므로 생략.
-- 패키지는 쉽게말해 모듈의 상위 단위라고 생각하면 되겠다.
 
 ```python
 ### 현재 파일을 기준으로, 모듈을 찾는 working directory 들을 표시함.
@@ -226,6 +225,50 @@ end of sub.py...
 beginning of main.py... name : __main__
 end of main.py...
 ```
+
+> **2.3 패키지**
+
+- 모듈을 모아놓는 디렉토리
+- 모듈 꾸러미로 해석하면 이해하기 편함
+- 디렉토리가 파이썬의 패키지로 인정받으려면 __init__.py 파일을 그 경로에 갖고 있어야 함
+- 보통의 경우, init__.py 파일 내용은 대개 비워둠
+
+```
+----- main.py
+  |
+  |-- package(folder)
+  |      |
+  |      |-- calculator.py
+  |      |-- __init__.py
+
+이런 디렉토리 구조일때, 패키지로 사용할 디렉토리 안에 __init__.py가 있다면 패키지로 인정이 됨.
+```
+
+```python
+### 사용 예시
+from package import calculator
+
+calculator.plus(1,3)
+```
+
+> site-packages : 파이썬의 기본 라이브러리 패키지 외에 추가적인 패키지를 설치하는 디렉토리. 
+> "C:\\Python34\\lib\\site-packages" 이렇게 생긴 경로에 서드파티 모듈들을 설치한다.
+
+```
+이를 이용하여, site-packages 안에 자신만의 패키지를 넣어서 사용할 수 있다.
+
+----- site-packages
+  		|
+  		|-- package(folder)
+  		|      |
+  		|      |-- calculator.py
+  		|      |-- __init__.py
+
+이렇게 해놓고, 
+from package import calculator
+이렇게 어디서든 사용할 수 있다는 것. (site-packages 하위에 있으므로, sys.path에 속하게 됨.)
+```
+
 -----------------------
 
 
