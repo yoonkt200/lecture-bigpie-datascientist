@@ -276,6 +276,10 @@ from package import calculator
 #### **3. 클래스와 오브젝트**
 
 ```python
+
+#################################################################
+#################################################################
+
 ### 클래스에서 self, cls, static의 역할
 # class는 붕어빵 빵틀, object는 붕어빵이라고 비유가 가능.
 # self는 붕어빵 각각이 가지는 속성이고, cls는 붕어빵 빵틀이 가지는 속성임.
@@ -312,6 +316,8 @@ c = InstanceCounter()
 c.print_instance_count()
 InstanceCounter.print_static_count()
 
+#################################################################
+#################################################################
 
 ### 예제2
 class Car:
@@ -332,6 +338,8 @@ c.print()
 # --> init 할때마다 붕어빵 빵틀의 속성 자체가 변하고 있음,
 # 새로 Car 오브젝트를 생성하면 붕어빵의 기본 count가 빵틀에서 나온 속성으로 설정됨.
 
+#################################################################
+#################################################################
 
 ### 클래스의 퍼블릭, 프라이빗
 class HasPrivate:
@@ -362,6 +370,116 @@ base = Base()
 base.base_method()
 derived = Derived()
 derived.base_method()
+
+#################################################################
+#################################################################
+
+### super를 이용한 상속
+class A:
+    no_init = "hello no init"
+    
+    def __init__(self):
+        self.hello = "hello"
+        print("A.__init__()") 
+        
+        
+class B(A):
+    def __init__(self):
+        #super().__init__()
+        print("B.__init__()")
+        
+b = B()
+b.hello
+b.no_init
+# super로 부모클래스를 init해주지 않으면 부모의 init에서부터 생성된 속성 사용 불가
+# super로 init 안해줘도 no_init 같은 속성은 사용 가능.
+
+
+### 다중상속
+class A:
+    pass
+
+class B:
+	pass
+
+class C(A,B):
+	pass
+
+# super와 오버라이딩을 이용하면, 다중상속에서 다이아몬드 상속 문제를 해결 가능함.
+
+#################################################################
+#################################################################
+
+### 데코레이터
+# __call__() 메소드는 객체를 함수 호출 방식으로 사용하게 만듬.
+
+# 첫번째 방법
+class Callable:
+    
+    def __call__(self):
+        print("I am called.")
+        
+obj = Callable()
+obj()
+
+class MyDecorator:
+
+    def __init__(self, f):
+        print("initialize decorator")
+        self.func = f
+        
+    def __call__(self):
+        print("begin :{0}".format(self.func.__name__))
+        self.func()
+        print("end :{0}".format(self.func.__name__))
+        
+def print_hello():
+    print("hello world!")
+    
+obj = MyDecorator(print_hello)
+obj()
+
+# 두번째 방법
+class MyDecorator: 
+    
+    def __init__(self, f):
+        print("Initializing MyDecorator...") 
+        self.func = f
+        
+    def __call__(self):
+        print ("Begin :{0}".format( self.func.__name__)) 
+        self.func()
+        print ("End :{0}".format(self.func.__name__))
+    
+@MyDecorator
+def print_hello(): 
+    print("Hello.")
+    
+print_hello()
+
+#################################################################
+#################################################################
+
+### 추상클래스와 메서드 implementation
+
+from abc import ABCMeta
+from abc import abstractmethod
+
+class AbstractDuck(metaclass=ABCMeta):
+
+    @abstractmethod 
+    def Quack(self):
+        pass
+    
+
+class Duck(AbstractDuck):
+    
+    def Quack(self):
+        print("implementation")
+        
+duck = Duck()
+duck.Quack()
+
 ```
 
 -----------------------
@@ -385,7 +503,83 @@ derived.base_method()
 
 > **4.2 특정 값을 skip할 때**
 
+```python
+a, _, b = 1, 3, 2
+# a=1, b=2
+a, _, b = [1, 2, 3]
+# a=1, b=3
 
+for _ in range(10):
+    print("hello")
+```
+
+> **4.3 숫자의 구분자로써 활용**
+
+```python
+a = 1_000_00_0
+# a=1000000
+b = 0b_11_0_1
+# b=13
+```
+
+> **4.4 네이밍의 용도**
+
+```
+언더스코어 네이밍은 주로 파이썬에서 public, private을 구분하기 위한 용도로 많이 사용한다.
+더블 언더스코어로 멤버 변수나 멤버 함수를 선언하게 되면, 마치 private처럼 동작하게 된다.
+언더스코어를 싱글로 사용하게 되면 같은 모듈 안에서는 public처럼 동작하면서
+명시적으로 사용하는 것이 가능하지만, 다른 모듈에서 해당 변수에 접근하려고 하면 private처럼 동작한다. 
+즉, 모듈로써 다른곳에서 사용할 경우에는 import가 되지 않는다.
+```
+
+```python
+### 더블 언더스코어 사용 시, private처럼 활용 가능.
+class HasPrivate:
+
+    def __init__(self):
+        self.public = "Public"
+        self.__private = "Private"
+
+    def print_from_internal(self):
+        print(self.public)
+        print(self.__private)
+
+    def public_print(self):
+        print("public print")
+        self.__private_print()
+        
+    def __private_print(self):
+        print("private print")
+        
+obj = HasPrivate()
+obj.print_from_internal()
+print(obj.public)
+print(obj.__private) # error
+obj.public_print()
+obj.__private_print() # error
+# 다른 모듈에서는 '_' 만 해줘도 접근 불가능!
+```
+
+> **4.5 스페셜 변수 혹은 스페셜 메서드**
+
+```
+__name__이나 __init__, __len__ 처럼 파이썬에서 특별한 문법적 기능이나, 
+특별한 기능을 제공하는 스페셜 변수나 메서드의 구성을 언더스코어로 표현한다. 
+네이밍과 더불어 언더스코어를 가장 빈번히 사용하는 용도이다.
+```
+
+> **4.6 맹글링을 위한 용도**
+
+```
+맹글링이란, 프로그래밍 언어 자체적으로 일정한 규칙에 의해 변수나 함수의 이름을 변경하는 것이다.
+파이썬에서 맹글링은 _Class+[name] 의 형식으로 이루어지는데, 맹글링을 호출하는 것이 바로 언더스코어이다.
+
+다음의 두 이미지는 맹글링이 적용되어 오버라이딩이 되지 않는 예와, 맹글링이 적용되지 않아 오버라이딩 된 예이다.
+```
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonBasic/week5_images/2.png)
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonBasic/week5_images/3.png)
 
 -----------------------
 
@@ -403,3 +597,32 @@ with open('test.txt', 'r') as file:
     print(str)
 ```
 
+> **5.2 pandas를 이용한 데이터 입력**
+
+```python
+### 기본적인 json read
+import json
+path = '/Users/yoon/Downloads/pydata/pydata-book-master/'
+path = path + 'ch02/usagov_bitly_data2012-03-16-1331923249.txt'
+
+records = [json.loads(line) for line in open(path, encoding="utf-8")]
+records[0]['tz']
+
+
+### pandas를 이용한 json read
+import pandas as pd
+
+data1 = pd.read_json(path, lines=True, encoding="utf-8")
+type(data1)
+data1.loc
+data1.index
+data1.columns
+data1['tz']
+
+
+### 행렬 단위로 접근
+data1[0:2]
+data1.loc[0:2] # loc == ix, ix는 decreated
+data1.loc[0]
+data1.loc[0, 'tz']
+```
