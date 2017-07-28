@@ -112,8 +112,8 @@ counts2.most_common(10)
 
 > **1.2 pd의 전처리 관련 여러 기능**
 
-```
-```# -*- coding: utf-8 -*-
+```python
+# -*- coding: utf-8 -*-
 
 import json
 path = '/Users/yoon/Downloads/pydata/pydata-book-master/'
@@ -228,3 +228,4 @@ rating_std_by_title2 = rating_std_by_title[active_titles_index] # 250이상으�
 import operator
 rating_std_by_title2 = sorted(rating_std_by_title2.items(), 
                               key=operator.itemgetter(0))[-10:]
+```
