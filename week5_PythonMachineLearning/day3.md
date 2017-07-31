@@ -78,6 +78,12 @@ print('Accuracy: %.2f' % accuracy_score(y_test, y_pred))
 > **2.2 로지스틱 회귀의 적용**
 
 ```
+분류 문제에서 그 분류들이 완벽하게 선형 분리되지 않는 경우, 
+퍼셉트론은 데이터에 절대 수렴 불가능하다. 각 에포크에서 하나의 오분류라도 발견되는 경우,
+계속하여 가중치가 업데이트 되고, 무한 반복에 빠지게 될 것이기 때문이다.
+
+그래서 더 간단하지만 강력한 로지스틱 회귀를 생각해볼 수 있다.
+
 로지스틱 회귀는 바이너리 분류를 위한 알고리즘으로 일반적인 회귀의 영역보다는, 
 머신 러닝의 영역에 속한다고 보는 것이 옳다고 할 수 있다.
 
@@ -103,18 +109,101 @@ print('Accuracy: %.2f' % accuracy_score(y_test, y_pred))
 ```
 
 ```python
+from sklearn.svm import SVC
+
+svm = SVC(kernel='linear', C=1.0, random_state=0)
+# 로지스틱 회귀에서의 C와 반대의 개념. 모델을 조율해주는 값이라고 보면 됨.
+svm.fit(X_train_std, y_train)
+y_pred_svc = svm.predict(X_test_std)
+print('Accuracy: %.2f' % accuracy_score(y_test, y_pred_svc))
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+np.random.seed(0)
+X_xor = np.random.randn(200, 2)
+y_xor = np.logical_xor(X_xor[:, 0] > 0,
+                       X_xor[:, 1] > 0)
+y_xor = np.where(y_xor, 1, -1)
+
+plt.scatter(X_xor[y_xor == 1, 0],
+            X_xor[y_xor == 1, 1],
+            c='b', marker='x',
+            label='1')
+plt.scatter(X_xor[y_xor == -1, 0],
+            X_xor[y_xor == -1, 1],
+            c='r',
+            marker='s',
+            label='-1')
+
+plt.xlim([-3, 3])
+plt.ylim([-3, 3])
+plt.legend(loc='best')
+plt.tight_layout()
+# plt.savefig('./figures/xor.png', dpi=300)
+plt.show()
+
+
+svm = SVC(kernel='rbf', C=10.0, random_state=0, gamma=0.10)
+svm.fit(X_xor, y_xor)
+y_pred_ksvc = svm.predict(X_xor)
+print('Accuracy: %.2f' % accuracy_score(y_xor, y_pred_ksvc))
 ```
 
 > **2.4 의사결정트리 적용**
 
 
 ```python
+### 의사결정 트리
+
+from sklearn.tree import DecisionTreeClassifier
+
+tree = DecisionTreeClassifier(criterion='entropy', max_depth=3, random_state=0)
+tree.fit(X_train, y_train)
+tree
+
+from sklearn.tree import export_graphviz
+import pydotplus
+from IPython.display import Image
+
+dot_data = export_graphviz(tree, 
+                out_file=None, 
+                feature_names=['petal length', 'petal width'])
+
+graph = pydotplus.graph_from_dot_data(dot_data)
+Image(graph.create_png())
+
+y_pred_tr = tree.predict(X_test)
+print('Accuracy: %.2f' % accuracy_score(y_test, y_pred_tr))
 ```
 
-> **2.5 knn 적용**
+> **2.5 랜덤 포레스트 적용**
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+forest = RandomForestClassifier(criterion='entropy',
+                                n_estimators=10, 
+                                random_state=1,
+                                n_jobs=2)
+forest.fit(X_train, y_train)
+
+y_pred_rf = tree.predict(X_test)
+print('Accuracy: %.2f' % accuracy_score(y_test, y_pred_rf))
+```
+
+> **2.6 knn 적용**
 
 
 ```python
+### knn 적용
+
+from sklearn.neighbors import KNeighborsClassifier
+
+knn = KNeighborsClassifier(n_neighbors=5, p=2, metric='minkowski')
+knn.fit(X_train_std, y_train)
+y_pred_knn = tree.predict(X_test)
+print('Accuracy: %.2f' % accuracy_score(y_test, y_pred_knn))
 ```
 
 
@@ -166,6 +255,55 @@ imputed_data
 > **3.2 범주형 데이터 처리**
 
 ```python
+import pandas as pd
+from io import StringIO
+
+df = pd.DataFrame([
+            ['green', 'M', 10.1, 'class1'], 
+            ['red', 'L', 13.5, 'class2'], 
+            ['blue', 'XL', 15.3, 'class1']])
+
+df.columns = ['color', 'size', 'price', 'classlabel']
+df
+
+### 범주형 데이터를 맵핑하는 과정
+size_mapping = {
+           'XL': 3,
+           'L': 2,
+           'M': 1}
+
+df['size'] = df['size'].map(size_mapping)
+df
+
+### 역변환
+inv_size_mapping = {v: k for k, v in size_mapping.items()}
+df['size'] = df['size'].map(inv_size_mapping)
+df
+
+### 패키지를 이용하는 방법
+from sklearn.preprocessing import LabelEncoder
+
+class_le = LabelEncoder()
+y = class_le.fit_transform(df['classlabel'].values)
+class_le.inverse_transform(y)
+# class_le 라는 레이블 인코더 오브젝트에 변환 전, 후의 정보를 모두 가지고서 편하게 변환이 가능.
+
+### 더미변수 생성 - one hot encoder
+from sklearn.preprocessing import OneHotEncoder
+
+X = df[['color', 'size', 'price']].values
+X[0]
+X[:, 0]
+
+color_le = LabelEncoder()
+X[:, 0] = color_le.fit_transform(X[:, 0])
+X
+
+ohe = OneHotEncoder(categorical_features=[0])
+ohe.fit_transform(X).toarray()
+
+### 더미변수 생성 함수
+pd.get_dummies(df[['price', 'color', 'size']])
 ```
 
 
@@ -187,32 +325,4 @@ SBS를 이용한 방법이 있고, 재귀적 후진 제거법 등 다양한 방�
 
 ```
 랜덤 포레스트를 활용한 피처 중요도의 평가를 나타내보았다.
-```
-
-
------------------------
-
-
-#### **5. 차원 축소 기법**
-
-위에서는 피처 선택을 통해 데이터의 차원을 축소했다면, 
-이번에는 피처 추출을 통해 원래보다 낮은 차원의 새로운 부분공간으로 변환시켜 데이터를 요약하는
-방법을 알아보겠다.
-
-> **5.1 주성분 분석을 활용한 비지도적 차원 축소 기법**
-
-```
-변수를 축약하는 기법.
-
-주성분 분석은 고차원 데이터에서 최대 분산의 방향을 찾아, 
-새로운 부분 공간에 원래보다 작은 차원으로 투영하는 것이다.
-
-d차원의 데이터간의 연관성을 찾기 위해 데이터를 먼저 표준화를 시킨다.
-피처 상호간의 각각의 공분산을 구하기 위해 공분산 행렬을 만든다.
-그리고 공분산행렬을 아이겐벨류와 아이겐벡터로 분해한다.
-공분산행렬을 통해 그 두가지를 유도하는 것이 가능한데,
-
-변수들중에 어느 변수가 가장 중요한지를 따지는 것이 아이겐벨류이다.
-그리고 아이겐벨류에 따라 나오는 가능한 경우의 수에서 각각마다 나오는 것이 아이겐 벡터이다.
-즉, 아이겐 벨류당 아이겐 벡터들이 나오게 되는데, 결국 
 ```
