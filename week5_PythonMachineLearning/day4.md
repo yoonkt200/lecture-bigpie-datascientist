@@ -15,8 +15,9 @@
 ```
 여러 변수들의 변량을 주성분 분석(Principal Component)라고 불리는,
 서로 상관성이 높은 여러 변수들의 선형조합으로 만든 새로운 변수들로 요약, 축약하는 기법.
+비정규화된 모델에서 흔히 야기되는 일명 '차원의 저주' 문제를 해결하도록 도와주기도 한다.
 
-회귀분석이나 의사결정트리등의 모델을 만들 때, 다중 공선성의 문제가 발생하는 것을 
+우리는 회귀분석이나 의사결정트리등의 모델을 만들 때, 다중 공선성의 문제가 발생하는 것을 
 쉽게 볼 수 있다. 이런 경우를 해결하는 것이 바로 상관도가 높은 변수들을 데이터를 대표하는 주성분 혹은
 요인으로 축소하여 모형개발에 이용하는 것이다.
 
@@ -31,7 +32,7 @@
 d차원의 데이터간의 연관성을 찾기 위해 데이터를 먼저 표준화를 시킨다.
 피처 상호간의 각각의 공분산을 구하기 위해 공분산 행렬을 만든다.
 그리고 공분산행렬을 아이겐벨류(고유값)와 아이겐벡터(고유벡터)로 분해한다.
-공분산행렬을 통해 그 두 가지(고유값, 벡터)를 유도하는 것이 가능한데,
+공분산행렬을 통해 그 두 가지(고유값, 벡터)를 유도하는 것이 가능한데, 이를 Eigendecomposition이라 한다.
 고유값과 고유벡터의 쌍은 최대 d개가 나올 수 있다.
 
 여기서 피처를 대표한다고 할 만큼의 큰 고유값과 그 쌍이 k개 존재한다면, 
@@ -81,6 +82,11 @@ x와 y의 공분산은 x, y의 흩어진 정도가 얼마나 서로 상관관계
 좀더 정확한 용어로는 λ는 '행렬 A의 고유값', v는 '행렬 A의 λ에 대한 고유벡터'이다.
 
 - 출처 : http://darkpgmr.tistory.com/105
+
+아래의 이미지가 이 내용에 대한 수식을 나타낸 것이다. A행렬은 공분산 행렬이 될 것이다.
+더 정확히는, λ는 하나의 값이 아니라, λ1, λ2... λn 까지 구할 수 있다. 수식에서는
+마치 λ가 하나인 것 처럼 보일 수 있지만, λ는 원래의 차원 개수만큼 생성된다.
+v1, v2, ... vn 으로 되어있는 고유벡터 역시 (v1, v2, ...vn)의 묶음이 n개 생성되는 것이다.
 ```
 
 ![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonMachineLearning/week5_images/3.png)
@@ -147,6 +153,10 @@ PCA같은 feature extract는 다르다. 데이터 자체에 칼을 대는 것이
 
 만약 PCA를 통해서 한다면, 가장 강한 에이겐 벨류를 가지는 벡터를 통해 입력 데이터를 하나의 차원으로
 변환시키는 과정을 거치는 것이다. 
+
+d차원의 데이터가 있을 때, 가장 큰 k개의 고유값에 대한 k개의 벡터를 선택하고,
+k개의 고유벡터로부터 투영행렬 W를 만든다. 이 W는 d차원의 입력데이터를 k차원의 새로운 피처 X로 변환시킨다.
+
 이것이 PCA의 총체적인 개념이다. 구체적인 구현은 단순히 수학을 코딩으로 옮기는 문제이다.
 
 얼마만큼의 차원으로까지 축소시키냐의 문제는, 
@@ -154,14 +164,141 @@ PCA같은 feature extract는 다르다. 데이터 자체에 칼을 대는 것이
 철저히 실전에서의 감각과 '해봄'에 의지하는 것 같다.
 ```
 
->> sklearn으로 PCA 사용하기
+>> Python에서 PCA 구현하기
+
+```
+sklearn 모듈을 이용한 주성분 분석 예제이다. 
+
+먼저 주성분을 추출하는 과정까지 진행해 본다. 과정은 다음과 같다.
+- 먼저 와인데이터를 분리하여 전처리한 뒤, 피처간의 공분산 행렬을 구한다.
+- 그리고 Numpy의 linalg.eig 함수를 이용하여 에이겐 벨류와 벡터를 추출한다.
+- 추출한 주성분을 아이겐벨류의 설명 분산 비율을 통하여 확인한다.
+```
 
 ```python
+### data 불러오기
+import pandas as pd
 
+df_wine = pd.read_csv('https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data', header=None)
+
+df_wine.columns = ['Class label', 'Alcohol', 'Malic acid', 'Ash', 
+'Alcalinity of ash', 'Magnesium', 'Total phenols', 
+'Flavanoids', 'Nonflavanoid phenols', 'Proanthocyanins', 
+'Color intensity', 'Hue', 'OD280/OD315 of diluted wines', 'Proline']
+
+df_wine.head()
+
+
+### 데이터 전처리 - 데이터셋 분리
+from sklearn.cross_validation import train_test_split
+
+X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
+
+X_train, X_test, y_train, y_test = \
+        train_test_split(X, y, test_size=0.3, random_state=0)
+        
+        
+### 데이터 전처리 - 데이터 표준화 작업
+from sklearn.preprocessing import StandardScaler
+
+sc = StandardScaler()
+X_train_std = sc.fit_transform(X_train)
+X_test_std = sc.transform(X_test)
+
+
+### 공분산 행렬을 이용한 Eigendecomposition
+import numpy as np
+
+cov_mat = np.cov(X_train_std.T) # 공분산 행렬을 생성해주는 함수
+# T는 Matrix의 T를 의미. 함수에 맞는 파라미터로 쓰기 위해 행렬을 돌려줌
+
+eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+
+print('\nEigenvalues \n%s' % eigen_vals)
+
+
+### 에이겐벨류의 설명 분산 비율
+tot = sum(eigen_vals)
+var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
+# 에이겐벨류 / 에이겐벨류의 합 을 각각 구한다. 나온 각각의 값은 아이겐벨류의 설명 분산 비율이다.
+# 즉, 어떤 에이겐벨류가 가장 설명력이 높은지를 비율로 나타내기 위한 것이다.
+
+cum_var_exp = np.cumsum(var_exp) # 누적 합을 계산해주는 함수. -> 누적 백분위로 표현
+
+
+### 에이겐벨류의 영향력을 그래프로 시각화
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+plt.bar(range(1, 14), var_exp, alpha=0.5, align='center',
+        label='individual explained variance')
+plt.step(range(1, 14), cum_var_exp, where='mid',
+         label='cumulative explained variance')
+plt.ylabel('Explained variance ratio')
+plt.xlabel('Principal components')
+plt.legend(loc='best')
+plt.tight_layout()
+# plt.savefig('./figures/pca1.png', dpi=300)
+plt.show()
+```
+
+```
+다음으로 와인 데이터를 새로운 주성분 축으로 변환하는 과정, 즉 피처변환을 진행해본다.
+```
+
+```python
+### 에이겐 쌍을 이용하여 투영행렬 생성
+eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:,i]) for i in range(len(eigen_vals))]
+# 에이겐 쌍 생성 -> 투플 자료형
+
+eigen_pairs.sort(reverse=True) # 내림차순으로 정렬
+
+w = np.hstack((eigen_pairs[0][1][:, np.newaxis],
+               eigen_pairs[1][1][:, np.newaxis]))
+# 투영행렬 W : 변수를 2차원으로 축소시키는 투영행렬.
+# eigen_pairs의 0,1 번째만 -> 2개의 에이겐 쌍으로만 차원축소를 하겠다는 것.
+# hstack -> 행의 수가 같은 두 개 이상의 배열을 옆으로 연결하여, 열의 수가 늘어난 np배열을 만든다.
+# 1차원 배열끼리는 hstack 되지 않으므로 [:, np.newaxis]을 추가함.
+
+print('Matrix W:\n', w)
+
+
+### 투영행렬로 피처 압축
+X_train_std[0].dot(w) # X_train_std[0] 행렬과 W 행렬의 곱(내적연산)
+
+X_train_pca = X_train_std.dot(w) # 피처를 투영행렬에 곱한 값 -> 피처 축소된 결과
+
+
+### 변환된 데이터를 그래프로 시각화
+colors = ['r', 'b', 'g']
+markers = ['s', 'x', 'o']
+
+for l, c, m in zip(np.unique(y_train), colors, markers):
+    plt.scatter(X_train_pca[y_train==l, 0], 
+                X_train_pca[y_train==l, 1], 
+                c=c, label=l, marker=m)
+
+plt.xlabel('PC 1')
+plt.ylabel('PC 2')
+plt.legend(loc='lower left')
+plt.tight_layout()
+# plt.savefig('./figures/pca2.png', dpi=300)
+plt.show()
+```
+
+>> sklearn으로 주성분 분석
+
+```
+위에서 구현한 내용을, sklearn을 통하여 모듈로 간단하게 사용할 수 있다.
+```
+
+```python
 
 ```
 
 > **1.2 선형 판별 분석을 활용한 지도적 데이터 압축**
+
+
 
 > **1.3 **
 
