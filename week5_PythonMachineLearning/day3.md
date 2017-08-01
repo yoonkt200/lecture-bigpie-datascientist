@@ -94,10 +94,65 @@ print('Accuracy: %.2f' % accuracy_score(y_test, y_pred))
 가중치를 업데이트하는 원리는 퍼셉트론과 동일(gradient discent)하지만, 
 구체적인 수식을 따지고 들어가기엔 다소 어렵다. 이 영역은 수학자의 영역에 더 가깝다.
 
-??? 파라미터의 의미
+회귀분석을 이용한 분류 문제에서는 가중치를 업데이트하여 모델을 학습하는 과정에서
+과적합의 문제가 발생하게 된다. 이를 해결하기 위한 방법으로는 일반적으로 4가지 정도가 있다.
+
+1. 훈련 데이터의 수를 충분히 넣는다.
+2. 피쳐의 수를 줄인다. (feature selection)
+3. 정규화를 이용하여 복잡도에 페널티를 부과한다.
+4. 데이터의 차원을 축소한다. (feature scaling or extract)
+
+이 중, 피처의 수를 줄이는 것과 데이터의 차원을 축소하는 것은 뒤에 나올 SBS기법과 PCA를 통해
+자세하게 설명하겠다.
+
+그렇다면 정규화를 이용하여 복잡도에 페널티를 부과하는 방법을 알아볼텐데, 정규화의 방법 역시
+피처의 수를 줄이는 feature selection의 일부라고 볼 수 있다. (L1 정규화의 경우)
+
+만약 회귀식이 과적화된 상황이고, 데이터에 적절한 함수는 2차 함수이며, 
+실제로 회귀된 f(x)가 4차함수라고 하자. 회귀식은 다음과 같다.
+
+f(x) = a + a1x + a2x^2 + a3x^3 + a4x^4
+
+이 식에서 a3x^3 + a4x^4 의 부분 때문에 회귀식에서의 복잡도가 커지게 되었고, 과적합이 일어났다.
+이 때, 비용함수에 대한 방법이 동일한 상태에서 a3과 a4에 매우 큰 값을 곱한다고 해보자.
+
+이때 비용함수를 최소화해주는 학습을 진행하게 되면, minimize를 찾을 것이기 때문에 a3,a4가 거의
+0에 가까운 값으로 수렴하게 될 것이다.
+
+이런 식으로 큰 가중치에 벌칙을 부과하는 방법이 정규화 방법이다.
+L1, L2 등의 정규화 방법이 있고 Lasso, Ridge 등의 이름으로 흔히 불린다.
+각각의 방법은 무엇을 페널티로 제공하는지에 따라 나뉘고, 특성이 약간씩 다르다.
+자세한 내용은 나중에 공부할 예정이다.
+
+sklearn에서 사용하는 로지스틱 함수에서 C라는 파라미터가 정규화를 담당하는 파라미터인데,
+값이 작을수록 정규화 강도를 증가시킨다는 것을 의미한다.
 ```
 
 ```python
+from sklearn.linear_model import LogisticRegression
+
+lr = LogisticRegression(C=1000.0, random_state=0) #C는 벌칙 상수.
+lr.fit(X_train_std, y_train) #표준화된 데이터 적용
+
+lr.predict_proba(X_test_std[0,:]) #해당 분류에 속할 확률값으로 결과 도출
+y_pred_lr=lr.predict(X_test_std) #예측한 분류값을 보고싶을 때
+
+print('Accuracy: %.2f' % accuracy_score(y_test, y_pred_lr))
+
+weights, params = [], []
+corr01=[] #기존의 값에 정확도율 받아두기
+
+#최적의 C값을 찾아보는 과정
+for c in np.arange(0, 10): #np에서는 마이너스 값을 못 씀
+    lr = LogisticRegression(C=10**c, random_state=0)
+    lr.fit(X_train_std, y_train)
+    y_pred_it=lr. predict(X_test_std)
+    corr00=accuracy_score(y_test, y_pred_it)
+    print('c= %d, Accuracy: %.2f' % (10**c, corr00))
+    weights.append(lr.coef_[1])
+    params.append(10**c)
+    corr01.append(corr00) 
+    #append: for 돌 때 마다(c값이 바뀔 때마다) 기존 값에 누적되서 저장되도록 함: 변화의 추이를 살펴볼 수 있다. 
 ```
 
 > **2.3 SVM 적용**
