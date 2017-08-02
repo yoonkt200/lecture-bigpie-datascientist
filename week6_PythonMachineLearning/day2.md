@@ -233,7 +233,7 @@ plt.show()
 
 > **1.6 미니배치 방식의 그래디언트 디센트 구현**
 
-```python
+```
 위에서 구현한 그래디언트 디센트는 배치 방식이다.
 온라인 방식의 그래디언트 디센트는 흔히 확률적 그래디언트 디센트라고 불리는데,
 이 방식을 이용하면 계산비용이 극적으로 감소하며, 데스크탑과 심신의 안정을 도모할 수 있다.
@@ -317,8 +317,12 @@ class AdalineSGD(object):
 
 
 > **2.1 신경망 등에서의 오버피팅**
+```
+```
 
 > **2.2 dropout의 개념**
+```
+```
 
 > **2.3 batch processing VS online processing**
 
@@ -345,20 +349,3 @@ online processing을 진행하는 python 코드는 다음 링크를 참조하길
 ```
 
 http://yamalab.tistory.com/34
-
-
-```
-??? 커널 기법
-??? 오버피팅 ~ dropout 개념 정리
-??? dropout : http://bcho.tistory.com/1149 참고
-
-??? 인공신경망과 딥러닝의 차이점 : https://m.blog.naver.com/PostView.nhn?blogId=lk3436&logNo=220469636281&proxyReferer=https%3A%2F%2Fwww.google.co.kr%2F
-??? SBS와 라쏘같은 페널티 규칙의 차이는 무엇인가??
-??? 랜덤 포레스트 변수 중요소 측정 원리는?
-??? 랜덤 포레스트는 블랙박스라고 했는데 변수 중요도가 측정이 가능하다고?
-??? L1, L2 정규화?
-??? SBS 이외의 피처 선택 방법들 정리
-??? cross validation?
-??? PCA - 범주형 데이터의 차원 축소는??
-
-```
