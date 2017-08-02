@@ -179,7 +179,7 @@ class AdalineGD(object):
 그래서 에포크를 항상 로그로 찍어서 관찰한 뒤 계수를 조정하거나, 그래프를 그려보는 것이 바람직하다.
 ```
 
-```
+```python
 fig, ax = plt.subplots(nrows=1, ncols=2, figsize=(8, 4))
 
 ada1 = AdalineGD(n_iter=10, eta=0.01).fit(X, y)
@@ -233,6 +233,82 @@ plt.show()
 
 > **1.6 미니배치 방식의 그래디언트 디센트 구현**
 
+```python
+위에서 구현한 그래디언트 디센트는 배치 방식이다.
+온라인 방식의 그래디언트 디센트는 흔히 확률적 그래디언트 디센트라고 불리는데,
+이 방식을 이용하면 계산비용이 극적으로 감소하며, 데스크탑과 심신의 안정을 도모할 수 있다.
+
+확률적 그래디언트 디센트는 가중치 업데이트의 사이클이 훨씬 짧기 때문에
+더 빠르게 수렴에 이르게 된다. 더 빠르게 수렴이 되는 만큼 국지적 최소값으로 빠질 수가 있다.
+
+이러한 단점을 보완하기 위해 그래디언트 디센트에서의 학습률을 동적으로 대체시킨다.
+시간이 지남에 따라 감소하는 적응적 학습률을 사용하는데, 본 글에서는 사용하지는 않기로 한다.
+
+이제 온라인 방식의 그래디언트 디센트의 소스코드를 훑어보자.
+input data만 나눠놓고, 업데이트하는 부분만 나눠놓으면 사실 별로 손 볼 부분도 없다.
+```
+
+```python
+from numpy.random import seed
+
+class AdalineSGD(object):
+
+    def __init__(self, eta=0.01, n_iter=10, shuffle=True, random_state=None):
+        self.eta = eta
+        self.n_iter = n_iter
+        self.w_initialized = False # 초기화와 관련된 변수
+        self.shuffle = shuffle # chunk data의 순서를 섞어주는 역할
+        if random_state:
+            seed(random_state)
+        
+    def fit(self, X, y):
+        self._initialize_weights(X.shape[1]) # 가중계수 초기화
+        self.cost_ = []
+        for i in range(self.n_iter):
+            if self.shuffle:
+                X, y = self._shuffle(X, y)
+            cost = []
+            for xi, target in zip(X, y):
+                cost.append(self._update_weights(xi, target))
+            avg_cost = sum(cost)/len(y)
+            self.cost_.append(avg_cost)
+        return self
+
+    def partial_fit(self, X, y): # 들어오는 partial data에 대해서 바로 학습, 업데이트
+        if not self.w_initialized:
+            self._initialize_weights(X.shape[1])
+        if y.ravel().shape[0] > 1:
+            for xi, target in zip(X, y):
+                self._update_weights(xi, target)
+        else:
+            self._update_weights(X, y)
+        return self
+
+    def _shuffle(self, X, y): # chunk data의 순서를 섞어주는 역할
+        r = np.random.permutation(len(y))
+        return X[r], y[r]
+    
+    def _initialize_weights(self, m): # 가중계수 초기화
+        self.w_ = np.zeros(1 + m)
+        self.w_initialized = True
+        
+    def _update_weights(self, xi, target): # 업데이트를 작은 단위로 바로 시행
+        output = self.net_input(xi)
+        error = (target - output)
+        self.w_[1:] += self.eta * xi.dot(error)
+        self.w_[0] += self.eta * error
+        cost = 0.5 * error**2
+        return cost
+    
+    def net_input(self, X):
+        return np.dot(X, self.w_[1:]) + self.w_[0]
+
+    def activation(self, X):
+        return self.net_input(X)
+
+    def predict(self, X):
+        return np.where(self.activation(X) >= 0.0, 1, -1)
+```
 
 -----------------------
 
