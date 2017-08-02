@@ -91,20 +91,20 @@ print(tfidf.fit_transform(count.fit_transform(docs)).toarray())
 
 ```
 in-memory 방식으로 대용량 데이터를 학습시키고 모델을 만들기에는 한계가 있다.
-따라서 batch의 방식으로 데이터를 chunk로 나누어서 처리해야 한다.
+따라서 mini batch(=온라인)의 방식으로 데이터를 chunk로 나누어서 처리해야 한다.
 
 감성분석에서 사용한 대용량 데이터를 다시 예제로 사용하였다.
 
 tf-idf를 추출하기 위해서는 TfidfTransformer 클래스를 사용했지만, 
-batch 방식에서는 사용할 수가 없다. 하지만 비슷한 일을 해주는 HashingVectorizer가 있다.
+온라인 방식에서는 사용할 수가 없다. 하지만 비슷한 일을 해주는 HashingVectorizer가 있다.
 이를 통해 전체 문서에서 tf-idf를 하는 것과 비슷한 작업을 해줄 수 있다.
 참고로, HashingVectorizer의 파라미터인 n_features는 데이터의 피처 수를 나타내는데,
 default가 무려 2의 20승에 달한다. 문서에는 정확한 설명이 나와있지는 않지만, 아마 hashing
 알고리즘으로 구현하는 과정에서, 이 공간이 충분하지 않으면 indexing이 초과되기 때문인 것으로 보인다.
 
-다시 돌아와서 SGDClassifier라는 클래스에서는 모델을 batch 방식으로 분류 학습
+다시 돌아와서 SGDClassifier라는 클래스에서는 모델을 mini batch 방식으로 분류 학습
 시켜주는 기능을 지원하는데, SGD란 Stochastic Gradient Descent의 약자로, 
-배치 방식으로 가중치를 학습시켜준다는 의미이다. 
+온라인 방식으로 가중치를 학습시켜준다는 의미이다. 
 loss라는 파라미터는 어떤 분류기를 사용할 것인지에 대한 파라미터이다.
 partial_fit이라는 멤버 함수로 실제적인 partial 학습이 진행된다.
 ```
@@ -155,7 +155,7 @@ def get_minibatch(doc_stream, size):
     return docs, y
 
 
-### batch 방식으로 tf-idf 진행
+### mini batch 방식으로 tf-idf 진행
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.linear_model import SGDClassifier
 
@@ -168,7 +168,7 @@ clf = SGDClassifier(loss='log', random_state=1, n_iter=1)
 doc_stream = stream_docs(path='./movie_data.csv')
 
 
-### batch 방식으로 모델 학습
+### mini batch 방식으로 모델 학습
 import pyprind
 pbar = pyprind.ProgBar(45)
 

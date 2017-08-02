@@ -55,7 +55,7 @@ x와 y의 공분산은 x, y의 흩어진 정도가 얼마나 서로 상관관계
 이것을 보완하기 위해 상관계수라는 것을 사용하는데, 확률변수의 절대적 크기에 영향을 받지 않도록 하는 것.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonMachineLearning/week5_images/1.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/1.png)
 
 >> 공분산 행렬
 
@@ -65,7 +65,7 @@ x와 y의 공분산은 x, y의 흩어진 정도가 얼마나 서로 상관관계
 행렬의 대각선 원소는 각 변수의 분산을 포함하며, 대각선 이외의 원소는 가능한 모든 변수 쌍 간의 공분산을 포함한다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonMachineLearning/week5_images/2.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/2.png)
 
 >> 고유값(eigenvalue)과 고유벡터(eigenvector)
 
@@ -89,7 +89,7 @@ x와 y의 공분산은 x, y의 흩어진 정도가 얼마나 서로 상관관계
 v1, v2, ... vn 으로 되어있는 고유벡터 역시 (v1, v2, ...vn)의 묶음이 n개 생성되는 것이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonMachineLearning/week5_images/3.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/3.png)
 
 ```
 PCA에 한정하여 고유값과 고유벡터를 살펴보면, 공분산 행렬 A를 알면 두 결과값을 얻을 수 있다는 것을 알수있다.
@@ -111,9 +111,9 @@ PCA에 한정하여 고유값과 고유벡터를 살펴보면, 공분산 행렬 
 차원 축소는 바로 행렬의 이러한 성질 덕분에 가능한 것이다. 다음의 이미지들은 행렬에 의한 벡터 맵핑의 예시이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonMachineLearning/week5_images/4.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/4.png)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonMachineLearning/week5_images/5.png)
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/5.png)
 
 >> 다시 PCA
 
