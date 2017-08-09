@@ -291,11 +291,50 @@ plt.show()
 ```
 
 ```python
+from sklearn.decomposition import PCA
 
+pca = PCA() 
+# pca = PCA(n_components=2) 라고 하면, 2개의 에이겐 쌍만 쓴다는 것.
+# n_components 는 none이 디폴트값.
+
+X_train_pca = pca.fit_transform(X_train_std)
+pca.explained_variance_ratio_ # pca객체의 기능으로, 에이젠벨류의 값을 소팅해서 보여줌.
+
+from sklearn.linear_model import LogisticRegression
+
+lr = LogisticRegression()
+lr = lr.fit(X_train_pca, y_train) # 차원이 축소된 데이터를 로지스틱 회귀 모델로 학습
 ```
 
 > **1.2 선형 판별 분석을 활용한 지도적 데이터 압축**
 
+```
+선형 판별 분석(Linear Discriminant Analysis, LDA)은 PCA와 마찬가지의 피처 압축 기법 중 하나이다.
+전체적인 개념은 상당히 유사하지만, LDA는 PCA와 달리 최대분산의 수직을 찾는 것이 아니라
+지도적 방식으로 데이터의 분포를 학습하여 분리를 최적화하는 피처 부분공간을 찾은 뒤, 
+학습된 결정 경계에 따라 데이터를 분류하는 것이 목표이다.
+
+즉, PCA가 데이터의 전체적인 분포를 참고하여 새로운 basis를 설정하고, 그 축에 맞게 데이터를
+새롭게 projection 하는 것이 목표라면, LDA는 지도적인 방법으로 basis를 찾아서
+그 축을 분리에 이용한 뒤, 최적의 분리를 완성한 뒤 projection을 하는 것이 목표이다.
+
+당연하게도 일반적인 상황에서는 PCA보다 성능이 좋은 것으로 알려져 있다. (PCA가 더 좋은 경우도 꽤 있단다.)
+
+LDA가 잘 작동하기 위해서는 다음과 같은 조건들이 필요하다(반드시 필수는 아니다. 사실 다 성립하기는 불가능.)
+
+1. 데이터가 정규 분포한다.
+2. 각각의 분류들은 동일한 공분산 행렬을 갖는다.
+3. 피처들은 통계적으로 상호 독립적이다.
+
+전체적인 개념 및 과정을 한번 훑어보자면,
+
+- 표준화된 d차원의 데이터가 있다.
+- 각각의 레이블에 대한 d차원의 평균 벡터를 구한다
+- 분류간 이산행렬과 분류 내 이산행렬을 만든다. 
+(분류간은 두 범주의 평균이 멀도록, 분류내는 분산이 작도록 하는 이산행렬.)
+- 이산행렬을 이용하여 아이겐벨류와 아이겐벡터를 구한다.
+- 변환행렬을 구하여 차원축소를 진행한다.
+```
 
 
 > **1.3 **
