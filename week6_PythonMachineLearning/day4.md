@@ -191,7 +191,7 @@ df_wine.head()
 from sklearn.cross_validation import train_test_split
 
 X, y = df_wine.iloc[:, 1:].values, df_wine.iloc[:, 0].values
-
+	
 X_train, X_test, y_train, y_test = \
         train_test_split(X, y, test_size=0.3, random_state=0)
         
@@ -317,8 +317,11 @@ lr = lr.fit(X_train_pca, y_train) # 차원이 축소된 데이터를 로지스�
 즉, PCA가 데이터의 전체적인 분포를 참고하여 새로운 basis를 설정하고, 그 축에 맞게 데이터를
 새롭게 projection 하는 것이 목표라면, LDA는 지도적인 방법으로 basis를 찾아서
 그 축을 분리에 이용한 뒤, 최적의 분리를 완성한 뒤 projection을 하는 것이 목표이다.
+지도적인 방법으로 basis를 찾는다는 것은, 통계적으로 지도적인 방법으로 두개의 이산행렬을 구한다는 것이다.
+두개의 이산행렬에 대한 설명은 밑에서 설명할 것이다.
 
-당연하게도 일반적인 상황에서는 PCA보다 성능이 좋은 것으로 알려져 있다. (PCA가 더 좋은 경우도 꽤 있단다.)
+내용만 봐서는 LDA는 PCA의 업그레이드 버전으로 보인다. 게다가 지도학습!
+당연하게도 일반적인 상황에서는 PCA보다 성능이 좋은 것으로 알려져 있다. (물론 PCA가 더 좋은 경우도 꽤 있단다.)
 
 LDA가 잘 작동하기 위해서는 다음과 같은 조건들이 필요하다(반드시 필수는 아니다. 사실 다 성립하기는 불가능.)
 
@@ -326,7 +329,7 @@ LDA가 잘 작동하기 위해서는 다음과 같은 조건들이 필요하다(
 2. 각각의 분류들은 동일한 공분산 행렬을 갖는다.
 3. 피처들은 통계적으로 상호 독립적이다.
 
-전체적인 개념 및 과정을 한번 훑어보자면,
+그리고 전체적인 개념 및 과정을 한번 훑어보자면,
 
 - 표준화된 d차원의 데이터가 있다.
 - 각각의 레이블에 대한 d차원의 평균 벡터를 구한다
@@ -336,10 +339,63 @@ LDA가 잘 작동하기 위해서는 다음과 같은 조건들이 필요하다(
 - 변환행렬을 구하여 차원축소를 진행한다.
 ```
 
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/9.png)
 
-> **1.3 **
+```
+위 그림을 보면, 왼쪽은 데이터를 변환행렬에 의해서 새롭게 1차원으로 투영했을 때, 부분적으로 겹치거나
+오분류가 일어난 것을 볼 수 있다. 반면 오른쪽은 새롭게 1차원으로 투영했을 때, 잘 분류된 모습이다.
+두 그래프의 차이는, 초록색 구분선으로 설명이 가능하다. 오른쪽의 경우는 두 분류(레이블)간의 mean의 차이가 크고
+분류 내의 분산(선형적 의미 : 새로운 축으로 투영했을 때 분류의 x축 범위가 좁은것 과 넓은 것)이 작다.
+왼쪽 그래프는 두 분류간의 평균은 커보이지만, 분산 역시 크기 때문에 투영이 잘 이루어졌다고 볼 수 없다.
+분류내의 이산행렬을 구한다는 것은 레이블을 알고 있어야 가능한 것이기 때문에 LDA가 지도적 방식인 것이다.
+PCA와 다른점은 바로 이렇게 지도적으로 분류간 이산행렬, 분류내 이산행렬을 구한다는 점이다. 
 
+PCA의 경우는 변수간의 공분산 행렬을 이용하여 데이터를 대표하는 에이겐 쌍을 추출했다면
+LDA의 기본적인 방법은 class들의 mean 값들의 차이는 최대화하는 행렬 A, 
+class내의 variance는 최소화하는 행렬 B를 찾아내서 B의 역행렬 X A행렬에다가 eigendicomposition을 통해 
+class 간의 mean은 최대화하고 class 내의 variance는 최소화하는 에이겐 쌍을 추출한다.
+(사실 LDA에서의 B행렬은 공분산 행렬과 비슷한 것이다.)
 
+조금 더 구체적인 설명과, 지도학습과 행렬들에 이용되는 수식은 다음을 참고하자.
+https://ratsgo.github.io/machine%20learning/2017/03/21/LDA/
+```
+
+>> sklearn에 구현된 LDA
+
+```
+직접 LDA로 차원축소를 구현하는 과정은 PCA와 거의 유사(이산행렬 부분만 추가되어 구현하면 됨 : 
+PCA에서 공분산 행렬을 구하는 것 까지의 단계를, 이산행렬들을 구하는 과정으로 대체하면 그 이후 구현은 동일.)
+하기 때문에 생략하고, 모듈로 미리 구현된 LDA를 사용하는 코드를 실행해보자. 콘텐츠는 다음과 같다.
+```
+
+```python
+# from sklearn.lda import LDA 가 Deprecation되었기 때문에 바꿔줌.
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+lda = LDA(n_components=2) # 2개의 에이겐 쌍을 선택
+X_train_lda = lda.fit_transform(X_train_std, y_train) # 축소된 훈련, 테스트 데이터 생성
+X_test_lda = lda.fit_transform(X_test_std, y_test)
+
+from sklearn.linear_model import LogisticRegression # 로지스틱 분류로 성능 테스트
+lr = LogisticRegression()
+lr = lr.fit(X_train_lda, y_train)
+
+lr.predict_proba(X_test_lda[0,:]) #해당 분류에 속할 확률값으로 결과 도출
+y_pred_lr=lr.predict(X_test_lda) #예측한 분류값을 보고싶을 때
+
+from sklearn.metrics import accuracy_score
+print('Accuracy: %.2f' % accuracy_score(y_test, y_pred_lr))
+# 무려 100%의 정확도..
+```
+
+> **1.3 비선형 매핑을 위한 커널 주성분 분석의 사용**
+
+```
+회귀분석과 대부분의 분류 알고리즘에서는 데이터를 선형분리 가능하다는 가정이 필요했다.
+심지어 인공신경망의 기초격인 퍼셉트론에서조차 선형분리 가능을 전제로 알고리즘이 동작했다.
+이러한 문제점들을 PCA, LDA같은 차원 축소 기법으로 극복했으나
+데이터의 모양이 정말로, 완전히, 앱솔루틀리 하게 비선형인 경우는 문제가 달라진다.
+
+```
 
 -----------------------
 
