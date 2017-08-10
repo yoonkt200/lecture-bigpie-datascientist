@@ -425,7 +425,7 @@ SVM에서의 커널 기법을 떠올려보자. 원래의 d차원 데이터를 k�
 새로운 basis에 projection 시키는 과정이라고 할 수 있다. 
 하지만 만약 여기서 데이터의 주성분 분석이 kernel의 형태라면, 
 기존의 linear projection이 nonlinear한 projection으로 바뀌게 될 것이다.
-그 결과, 우리가 분류하고자 하는 데이터셋은 커널의 선형적 성질을 띤 채로 non-linear하게 구분이 된다.
+그 결과, 우리가 분류하고자 하는 데이터셋은 커널의 성질을 띤 채로 non-linear하게 구분이 된다.
 
 ```
 
@@ -453,9 +453,180 @@ plt.show()
 -----------------------
 
 
-#### **2. 모델 평가와 하이퍼 파라미터 튜닝**
-
-#### **3. 앙상블 학습을 위한 모델 결합**
+#### **2. 모델 평가**
 
 ```
+머신러닝 모델을 학습하는 데 있어서 중요한 점 중 하나는, 새로운 데이터셋에 대한 반응하는 모델의 성능을 추정하는 것이다.
+만약 새로운 데이터셋이 들어왔을 때 학습된 모델이 얼마나 예측이나 분류를 잘 수행하는지에 대한 예상이 필요하다.
+우리가 학습한 모델이 새로운 데이터에 대한 결과의 예상이라면 우리는 그 모델이 얼마나 잘 예상할지에 대한 예상이 필요하다.
+
+정확한 용어로 얘기하자면, 모델의 일반화 오차에 대해 신뢰할만한 추정치를 구할 수 있게 해주는 방법이 필요하다는 것이다.
+
+그 방법으로는 일반적으로 크게 두가지, 홀드아웃(holdout) 교차검증과 k-fold 교차검증의 방법이 있다.
 ```
+
+> **2.1 홀드아웃 교차검증 방법**
+
+```
+가장 보편적인 모델의 성능 테스트 방법은, 원 데이터를 훈련데이터와 테스트데이터 두개로 나누는 것이다.
+훈련데이터로 모델을 학습하고, 테스트 데이터로 모델의 성능을 증가시키는 선택을 반복하게 된다.
+하지만 모델을 선택하는 동안 동일한 테스트 데이터를 계속 재사용한다면, 이 테스트 데이터는 테스트데이터로써의
+효용가치가 떨어지고, 훈련데이터화 될 것이다. 결국 데이터는 오버피팅 된다.
+
+하지만 홀드아웃 메서드를 사용하면 데이터를 세 부분으로 나누게 된다.
+처음의 모델 학습에서 분리된 훈련 데이터와 테스트 데이터, 즉 ((훈련데이터, 검증데이터), 테스트데이터) 세 개로 나뉜다.
+여기서의 훈련 데이터는 말 그대로 훈련 데이터이고, 검증 데이터에 대한 성능을 높이는 작업을 학습에서 진행한다.
+그리고 테스트 데이터를 이용하여 최종 성능을 추정하게 된다.
+
+홀드아웃 교차검증의 단점은, 데이터를 위와 같이 나눈 방식 자체가 성능 추정에 민감한 영향을 미친다는 것이다.
+만약 데이터셋 전체가 개수가 크지 않다면, 이러한 분할은 치명적일 수 있다.
+즉 홀드아웃 셋을 만들어 내는 것 자체에 대단한 신경을 써야한다는 것이다.
+```
+
+> **2.2 k-fold 교차검증 방법**
+
+```
+k-fold 교차검증은 조금 더 강인한 성능추정 기법이다.
+분류기 성능 측정의 통계적 신뢰도를 높이기 위해서, resampling 방법을 사용한다.
+
+먼저 데이터를 k개의 데이터로 등분한다. 분리된 k개의 subset중에 k-1개를 훈련 데이터로 사용하고
+(샘플링의 방법은 simple random, systematic, stratified, First N, cluster등이 있음.)
+1개의 subset을 테스트 데이터로 사용한다. 여기서 비복원 추출의 개념으로, 한번 테스트로 선택된 subset 데이터는
+다시 선택되지 않는다. 물론 k-fold와 홀드아웃 교차검증을 섞어서 사용할 수도 있다.
+그리고 당연하게도, k등분 된 k-fold 검정에서의 iterate 횟수는 k번이다. (비복원으로 모든 경우의 수를 하는 갯수)
+
+k-fold의 장점은 모든 데이터를 training과 test에 쓸 수 있다는 점이다. 또한 오버피팅의 염려도 크지 않다.
+하지만 시간이 다소 오래걸린다는 단점이 존재한다.
+k=n 으로 설정하여 1개의 샘플을 테스트셋으로 두어 샘플의 숫자만큼 반복측정을 하는,
+leave-one-out(혹은 jackknife 기법)기법과 같은 극단적인 방법으로 실행할 때는 더더욱 그렇다.
+
+보통 k-fold는 일반화 성능을 만족시키는 최적의 하이퍼 파라미터를 구하기 위한 모델 튜닝에 사용된다는 것이 가장 중요하다.
+
+위에서 잠시 언급한 층화 추출(stratified) 등으로 k-fold를 샘플링하게 되면 이 알고리즘은 조금 더 개선이 가능하다.
+그것을 층화 k-fold 교차검증(Stratified K-fold Cross Validation)이라고 한다.
+```
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/14.png)
+
+>> k-fold 교차검증을 파이썬에서 사용하기
+
+```python
+from sklearn.cross_validation import cross_val_score
+
+scores = cross_val_score(estimator=pipe_lr, 
+                         X=X_train, 
+                         y=y_train, 
+                         cv=10,
+                         n_jobs=1)
+print('CV accuracy scores: %s' % scores)
+print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
+```
+
+
+-----------------------
+
+
+#### **3. 학습, 검증곡선과 편향-분산 트레이드오프**
+
+>> 편향-분산 트레이드오프 (Bias-Variance Tradeoff)
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/16.png)
+
+```
+머신 러닝에서의 error는 크게 두 분류로 나뉜다.
+bias(편향), 그리고 variance(분산)이다.
+
+bias는 흔히 생각할 수 있는 error로, 선형 회귀같은 문제에서의 SSE를 떠올리면 쉽다.
+모델이 학습데이터를 충분히 설명할 수 없는 상황에서 커지는 에러이다. 
+이 상황을 흔히 underfitting이라고 한다.
+
+variance는 그 반대로 모델이 학습데이터를 과도하게 잘 설명하는 상황이다.
+모집단을 추정하고자 표본집단을 이용하여 모델을 만들어놨더니, 표본집단만을 거창하게 잘 설명하는 모델이 된 것이다.
+머신러닝을 공부하는 사람이라면 한 번 쯤 들어본, overfitting의 상황이다.
+
+variance에 대해 수학적으로 조금 더 직관적으로 얘기하자면, 
+Training Score와 Cross Validation의 차이가 심해지는 상황이 variance가 증가하는 상황이다.
+아래의 그림을 보면 매우 쉽게 알 수 있다. 
+빨간 곡선은 cross validation error이고, training error가 녹색 곡선이다.
+학습이 진행됨에 따라 오버피팅이 되기 때문에 트레이닝 스코어는 계속해서 증가하는 경향을 보이지만,
+교차검증값은 점점 악화된다. 모델이 일반화 성능을 잘 보여주는 영역에서 벗어나고 있는 상황이다.
+(참고 - 트레이닝 스코어 : 학습데이터로 모델을 테스트했을때의 스코어, 
+교차검증 스코어 : 모델의 일반적 성능을 추정하기 위해, 테스트셋을 resampling 하는 등의 모델 일반화 검증을 하는 방법에 대한 스코어)
+```
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/15.png)
+
+```
+일반적인 머신러닝에서는 편향-분산의 관계는 편향이 올라가면 분산은 내려가고, 
+분산이 올라가면 편향이 내려가는 시소 관계에 놓여있다. 이를 편향-분산 트레이드오프라 한다.
+
+흔히 머신러닝에 있어서 중요한 것으로, 비용함수를 최적화 하거나 차원을 축소한다거나 하는 이야기를 하기 쉽다.
+하지만 편향-분산 트레이드오프를 잘 맞춰주는 것이 훨씬, 머신러닝의 정말 기본중의 기본이라고 할 수 있겠다.
+
+편향-분산 트레이드오프를 잘 맞춰주기 위해서는 그리드검색등을 이용한 파라미터 튜닝의 좋은 기법등이 있을 수 있겠으나,
+역시 기본이 되면서 사람에게 설득력을 갖는 것은 눈으로 보여지는 것이다.
+학습곡선과 검증곡선을 이용하여 바이어스와 분산 문제를 진단하는 것이 여전히 좋은 방법이다.
+sklearn에서는 learning-curve를 아주 쉽게 그려주는 모듈을 제공한다.
+
+이것을 이용하는 것이 전자보다 더 의미가 있다.
+그리드 검색의 하이퍼 파라미터 튜닝, 중첩 교차검증 등의 고급 기법은 학습곡선과 검증곡선을 토대로,
+이 문제를 사람의 직관으로 판단하는 요인을 코드로 구현한 것에 지나지 않기 때문이다.
+
+아래의 예제는 학습곡선과 검증곡선으로 편향-분산 트레이드 오프 상황을 핸들링하는 상황을 재현한 것이다.
+
+더욱 고급기법의 경우는 오히려 코드로는 훨씬 쉽다.
+GridSearchCV등의 클래스에 매우 직관적이면서 쉽게 정리가 되어있기 때문에 sklearn의 튜토리얼을 
+한 번 쯤 따라해보는 것만으로도 충분하다.
+```
+
+```python
+%matplotlib inline
+import matplotlib.pyplot as plt
+from sklearn.learning_curve import learning_curve
+
+pipe_lr = Pipeline([('scl', StandardScaler()),
+            ('clf', LogisticRegression(penalty='l2', random_state=0))])
+
+train_sizes, train_scores, test_scores =\
+                learning_curve(estimator=pipe_lr, 
+                X=X_train, 
+                y=y_train, 
+                train_sizes=np.linspace(0.1, 1.0, 10), 
+                cv=10,
+                n_jobs=1)
+
+train_mean = np.mean(train_scores, axis=1)
+train_std = np.std(train_scores, axis=1)
+test_mean = np.mean(test_scores, axis=1)
+test_std = np.std(test_scores, axis=1)
+
+plt.plot(train_sizes, train_mean, 
+         color='blue', marker='o', 
+         markersize=5, label='training accuracy')
+
+plt.fill_between(train_sizes, 
+                 train_mean + train_std,
+                 train_mean - train_std, 
+                 alpha=0.15, color='blue')
+
+plt.plot(train_sizes, test_mean, 
+         color='green', linestyle='--', 
+         marker='s', markersize=5, 
+         label='validation accuracy')
+
+plt.fill_between(train_sizes, 
+                 test_mean + test_std,
+                 test_mean - test_std, 
+                 alpha=0.15, color='green')
+
+plt.grid()
+plt.xlabel('Number of training samples')
+plt.ylabel('Accuracy')
+plt.legend(loc='lower right')
+plt.ylim([0.8, 1.0])
+plt.tight_layout()
+# plt.savefig('./figures/learning_curve.png', dpi=300)
+plt.show()
+```
+
+![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/17.png)
