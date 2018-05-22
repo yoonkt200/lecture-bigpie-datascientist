@@ -56,9 +56,9 @@ data_2013_top10_fortext$stat_name.x <- as.character(data_2013_top10_fortext$stat
 
 >> 아래는 위 두 가지 상황에 대한 시각화 결과이다.
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week4_Visualization/week4_images/1.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week4-visualization/week4-images/1.png)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week4_Visualization/week4_images/2.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week4-visualization/week4-images/2.png)
 
 > **1.2 googleVis 활용**
 

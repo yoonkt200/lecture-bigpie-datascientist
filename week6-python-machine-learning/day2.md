@@ -49,7 +49,7 @@
 3. 가중치를 업데이트한다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/6.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/6.png)
 
 ```
 이제 가중벡터 내에서 업데이트 되는 각각의 가중치 wj를 수식으로 표현하면 다음과 같다.
@@ -355,9 +355,9 @@ backpropagation 기법도 발전하였고 무엇보다 dropout이라는 새로�
 드롭아웃은 워낙에 쉽고 직관적인 방법이기 때문에, 아래의 두 이미지만 보아도 별다른 설명 없이 이해가 가능하다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/7.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/7.png)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/8.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/8.png)
 
 > **2.3 batch processing VS online processing**
 

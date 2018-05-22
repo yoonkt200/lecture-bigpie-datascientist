@@ -494,7 +494,7 @@ duck.Quack()
 
 > **4.1 파이썬 인터프리터에서의 사용**
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonBasic/week5_images/1.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week5-python-basic/week5-images/1.png)
 
 ```
 위 그림은 IPython으로 파이썬 인터프리터를 실행한 것이다. 
@@ -577,9 +577,9 @@ __name__이나 __init__, __len__ 처럼 파이썬에서 특별한 문법적 기�
 다음의 두 이미지는 맹글링이 적용되어 오버라이딩이 되지 않는 예와, 맹글링이 적용되지 않아 오버라이딩 된 예이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonBasic/week5_images/2.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week5-python-basic/week5-images/2.png)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week5_PythonBasic/week5_images/3.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week5-python-basic/week5-images/3.png)
 
 -----------------------
 

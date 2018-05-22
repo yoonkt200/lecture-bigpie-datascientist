@@ -55,7 +55,7 @@ x와 y의 공분산은 x, y의 흩어진 정도가 얼마나 서로 상관관계
 이것을 보완하기 위해 상관계수라는 것을 사용하는데, 확률변수의 절대적 크기에 영향을 받지 않도록 하는 것.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/1.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/1.png)
 
 >> 공분산 행렬
 
@@ -65,7 +65,7 @@ x와 y의 공분산은 x, y의 흩어진 정도가 얼마나 서로 상관관계
 행렬의 대각선 원소는 각 변수의 분산을 포함하며, 대각선 이외의 원소는 가능한 모든 변수 쌍 간의 공분산을 포함한다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/2.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/2.png)
 
 >> 고유값(eigenvalue)과 고유벡터(eigenvector)
 
@@ -89,7 +89,7 @@ x와 y의 공분산은 x, y의 흩어진 정도가 얼마나 서로 상관관계
 v1, v2, ... vn 으로 되어있는 고유벡터 역시 (v1, v2, ...vn)의 묶음이 n개 생성되는 것이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/3.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/3.png)
 
 ```
 PCA에 한정하여 고유값과 고유벡터를 살펴보면, 공분산 행렬 A를 알면 두 결과값을 얻을 수 있다는 것을 알수있다.
@@ -111,9 +111,9 @@ PCA에 한정하여 고유값과 고유벡터를 살펴보면, 공분산 행렬 
 차원 축소는 바로 행렬의 이러한 성질 덕분에 가능한 것이다. 다음의 이미지들은 행렬에 의한 벡터 맵핑의 예시이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/4.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/4.png)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/5.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/5.png)
 
 >> 다시 PCA
 
@@ -339,7 +339,7 @@ LDA가 잘 작동하기 위해서는 다음과 같은 조건들이 필요하다(
 - 변환행렬을 구하여 차원축소를 진행한다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/9.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/9.png)
 
 ```
 위 그림을 보면, 왼쪽은 데이터를 변환행렬에 의해서 새롭게 1차원으로 투영했을 때, 부분적으로 겹치거나
@@ -506,7 +506,7 @@ leave-one-out(혹은 jackknife 기법)기법과 같은 극단적인 방법으로
 그것을 층화 k-fold 교차검증(Stratified K-fold Cross Validation)이라고 한다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/14.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/14.png)
 
 >> k-fold 교차검증을 파이썬에서 사용하기
 
@@ -530,7 +530,7 @@ print('CV accuracy: %.3f +/- %.3f' % (np.mean(scores), np.std(scores)))
 
 >> 편향-분산 트레이드오프 (Bias-Variance Tradeoff)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/16.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/16.png)
 
 ```
 머신 러닝에서의 error는 크게 두 분류로 나뉜다.
@@ -554,7 +554,7 @@ Training Score와 Cross Validation의 차이가 심해지는 상황이 variance�
 교차검증 스코어 : 모델의 일반적 성능을 추정하기 위해, 테스트셋을 resampling 하는 등의 모델 일반화 검증을 하는 방법에 대한 스코어)
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/15.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/15.png)
 
 ```
 일반적인 머신러닝에서는 편향-분산의 관계는 편향이 올라가면 분산은 내려가고, 
@@ -629,4 +629,4 @@ plt.tight_layout()
 plt.show()
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/17.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/17.png)

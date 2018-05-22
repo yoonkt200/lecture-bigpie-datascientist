@@ -172,7 +172,7 @@ for c in np.arange(0, 10): #np에서는 마이너스 값을 못 씀
 
 >> SVM의 원리
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/10.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/10.png)
 
 ```
 SVM은 퍼셉트론을 확장한 개념으로, 데이터를 선형으로 분리하는 최적의 선형 결정 경계를 찾는 알고리즘이다.
@@ -197,7 +197,7 @@ SVM은 이러한 마진을 최대로 하는 분류 경계면을 찾는 알고리
 이 이유는 다음의 그림으로 쉽게 이해할 수 있다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/11.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/11.png)
 
 ```
 위의 그림을 보면 왼쪽의 경우 2차원에서는 선형 분리가 불가능하다. 하지만 이 데이터들을 3차원으로
@@ -218,7 +218,7 @@ SVM은 이러한 마진을 최대로 하는 분류 경계면을 찾는 알고리
 가장 적절한 초평면을 찾아가는 과정을 나오는 변수들을 방정식으로 사용해야 하기 때문이다.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/13.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/13.png)
 
 ```
 가장 효과적인 초평면을 찾아가면서 그룹간의 categorization을 할 때 발생하는 오류를 최소화해야 하는데,
@@ -231,7 +231,7 @@ SVM은 이러한 마진을 최대로 하는 분류 경계면을 찾는 알고리
 
 >> 여유변수 파라미터를 사용하여 선형 분리를 조절
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week6_PythonMachineLearning/week6_images/12.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week6-python-machine-learning/week6-images/12.png)
 
 ```
 이제 여유변수라는 파라미터가 필요해지게 된다. 여유변수는 말 그대로, 비선형의 분리 가능 데이터를 위한
