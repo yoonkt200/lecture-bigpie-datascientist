@@ -177,7 +177,7 @@ sampleBy(Sepal.Length~Species, data = iris, frac = 0.1, systematic = T) # 종 �
 6. 관찰값이 기각역에 있는지를 판단하여 기각과 채택을 결정함.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/5.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week2-statistics/week2-images/5.png)
 
 > **2.2 R에서 실제 가설 검정**
 

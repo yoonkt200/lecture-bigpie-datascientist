@@ -24,9 +24,9 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 > **1.3 SQL Developer initioalize**
 
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/1.JPG)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/tree/master/week1-database/week1-images/1.JPG)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/2.JPG)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/tree/master/week1-database/week1-images2.JPG)
 
 
 -----------------------
@@ -100,7 +100,7 @@ download/developer download/Developer Tools--> SQL Developer --> 400MB Download
 개체(entity)를 추출하고 각 개체들간의 관계를 정의하여 ER다이어그램을 만드는 과정.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/3.jpg)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/tree/master/week1-database/week1-images/3.jpg)
 
 ```
 [4.3.3 논리적 모델링]

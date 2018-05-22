@@ -206,7 +206,7 @@ Cartesian production : 두 릴레이션을 연결시켜 하나의 결과 릴레�
 결과 릴레이션은 첫 번째 릴레이션의 투플을 두번째 릴레이션의 모든 투플과 순서대로 곱해진 형식.
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/2-1.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/tree/master/week1-database/week1-images/2-1.png)
 
 [카티전 프로덕션 예제]
 
@@ -236,5 +236,5 @@ Cartesian production : 두 릴레이션을 연결시켜 하나의 결과 릴레�
 
 - 릴레이션의 속성 값의 집합으로 연산을 수행함.
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/2-2.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/tree/master/week1-database/week1-images/2-2.png)
 

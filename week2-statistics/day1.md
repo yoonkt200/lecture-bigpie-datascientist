@@ -15,9 +15,9 @@
 
 > **1.2 javac 명령어가 안될때 / 설정법 (윈도우 7 기준)**
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/1.JPG)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week2-statistics/week2-images/1.JPG)
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/2.JPG)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week2-statistics/week2-images/2.JPG)
 
 ```
 JAVA_HOME 이라는 변수를 추가하고, JAVA_HOME에는 java sdk 설치 경로를 입력한다.
@@ -27,7 +27,7 @@ JAVA_HOME 이라는 변수를 추가하고, JAVA_HOME에는 java sdk 설치 경�
 (;%JAVA_HOME%\bin)
 ```
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/3.JPG)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week2-statistics/week2-images/3.JPG)
 
 ##### 다음처럼 되었으면 성공.
 
@@ -56,7 +56,7 @@ JAVA_HOME 이라는 변수를 추가하고, JAVA_HOME에는 java sdk 설치 경�
 
 - 참고 : 가중평균
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week2_StatisticAnalysis/week2_images/4.JPG)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week2-statistics/week2-images/4.JPG)
 
 > 전수조사는 리소스 낭비가 심하므로, 샘플링을 해야함. (빅데이터 조차도 모집단이 아님.)
 

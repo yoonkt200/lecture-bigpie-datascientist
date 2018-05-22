@@ -452,7 +452,7 @@ having count(empno) >= 2
 
 
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week1_Database/week1_images/4.JPG)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/tree/master/week1-database/week1-images/4.JPG)
 
 ```sql
 
