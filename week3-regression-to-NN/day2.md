@@ -101,7 +101,7 @@ R에서는 요한슨 공적분 검정 방정식을 사용하는데,
 
 - https://datascienceschool.net/view-notebook/d5478c5ed2044cb9b88fa2ef015eb3a4/
 
-![](https://raw.github.com/yoonkt200/DataScience/master/week3_Regression~NN/week3_images/2.png)
+![](https://raw.github.com/yoonkt200/lecture-bigpie-datascientist/master/week3-regression-to-NN/week3-images/2.png)
 
 #### 다음과 같은 시계열 데이터가 있다고 할때의 간단한 예제코드이다.
 
